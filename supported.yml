@@ -1,0 +1,53 @@
+datasources:
+  - model_name: app_group
+    oas_endpoint: /apps/fabrics.eda.nokia.com
+    oas_schema: AppGroup
+  - model_name: resource_list
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1
+    oas_schema: ResourceList
+  - model_name: fabric_list
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics
+    oas_schema: com.nokia.eda.fabrics.v1.FabricList
+  - model_name: fabric
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics/{name}
+    oas_schema: com.nokia.eda.fabrics.v1.Fabric
+  - model_name: isl_list
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls
+    oas_schema: com.nokia.eda.fabrics.v1.ISLList
+  - model_name: isl
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls/{name}
+    oas_schema: com.nokia.eda.fabrics.v1.ISL
+  - model_name: isl_ping_list
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings
+    oas_schema: com.nokia.eda.fabrics.v1.IslPingList
+  - model_name: isl_ping
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}
+    oas_schema: com.nokia.eda.fabrics.v1.IslPing
+  - model_name: workflow_get_inputs_resp_elem
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}/_input
+    oas_schema: WorkflowGetInputsRespElem
+
+resources:
+  - model_name: fabric
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics
+    oas_schema: com.nokia.eda.fabrics.v1.Fabric
+  - model_name: isl
+    oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls
+    oas_schema: com.nokia.eda.fabrics.v1.ISL
+  - model_name: isl_ping
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings
+    oas_schema: com.nokia.eda.fabrics.v1.IslPing
+
+qualified:
+  datasources:
+    - oas_schema: IntentTargets
+      get: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics/{name}/_targets
+    - oas_schema: ResourceHistory
+      get: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics/{name}/_revs
+    - oas_schema: UIResult
+      get: /apps/fabrics.eda.nokia.com/v1/_ui/{pathname}
+    - oas_schema: com.nokia.eda.fabrics.v1.Fabric_DeletedResources
+      get: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics/_deleted
+    - oas_schema: com.nokia.eda.fabrics.v1.ISL_DeletedResources
+      get: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls/_deleted
+  resources:

@@ -106,25 +106,25 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 								"border_leafs": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"asn_pool": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
 										"border_leaf_node_selectors": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "Label selector used to select Toponodes to configure as Borderleaf nodes.",
 											MarkdownDescription: "Label selector used to select Toponodes to configure as Borderleaf nodes.",
 										},
 										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 												},
 												"import_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 												},
@@ -134,17 +134,17 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: RouteLeakingValue{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 											MarkdownDescription: "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 										},
 										"system_pool_ipv4": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
 										"system_pool_ipv6": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
@@ -154,44 +154,44 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: BorderLeafsValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional: true,
+									Computed: true,
 								},
 								"fabric_selectors": schema.ListAttribute{
 									ElementType:         types.StringType,
-									Optional:            true,
+									Computed:            true,
 									Description:         "Selects Fabric resources when connecting multiple Fabrics together. Only one Fabric needs the selector, typically the upper layer (e.g., Superspine) selecting the lower layer (e.g., a pod fabric of leafs and spines). This helps build complete Fabrics in smaller instances of the Fabric resource. This instance selecting other fabrics must also select the InterSwitchLinks connecting itself to the selected Fabrics.",
 									MarkdownDescription: "Selects Fabric resources when connecting multiple Fabrics together. Only one Fabric needs the selector, typically the upper layer (e.g., Superspine) selecting the lower layer (e.g., a pod fabric of leafs and spines). This helps build complete Fabrics in smaller instances of the Fabric resource. This instance selecting other fabrics must also select the InterSwitchLinks connecting itself to the selected Fabrics.",
 								},
 								"inter_switch_links": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"ip_mtu": schema.Int64Attribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Sets the IP MTU for the DefaultInterface.",
 											MarkdownDescription: "Sets the IP MTU for the DefaultInterface.",
 										},
 										"link_selectors": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "Selects TopoLinks to include in this Fabric, creating an ISL resource if both Nodes in the TopoLink are part of this Fabric or a selected Fabric.",
 											MarkdownDescription: "Selects TopoLinks to include in this Fabric, creating an ISL resource if both Nodes in the TopoLink are part of this Fabric or a selected Fabric.",
 										},
 										"pool_ipv4": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to DefaultInterfaces which are members of the ISLs.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack DefaultInterfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to DefaultInterfaces which are members of the ISLs.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack DefaultInterfaces.",
 										},
 										"pool_ipv6": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to DefaultInterfaces which are members of the ISLs.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack DefaultInterfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to DefaultInterfaces which are members of the ISLs.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack DefaultInterfaces.",
 										},
 										"qos": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"egress_policy": schema.StringAttribute{
-													Optional: true,
+													Computed: true,
 												},
 												"ingress_policy": schema.StringAttribute{
-													Optional: true,
+													Computed: true,
 												},
 											},
 											CustomType: QosType{
@@ -199,15 +199,15 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: QosValue{}.AttributeTypes(ctx),
 												},
 											},
-											Optional: true,
+											Computed: true,
 										},
 										"unnumbered": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Enables unnumbered interfaces on the ISL; for IPv6, only link-local addresses are used unless a PoolIPV6 is also specified.  DefaultInterfaces in the ISL are added to the DefaultBGPPeer dynamic neighbor list when using an eBGP underlay.",
 											MarkdownDescription: "Enables unnumbered interfaces on the ISL; for IPv6, only link-local addresses are used unless a PoolIPV6 is also specified.  DefaultInterfaces in the ISL are added to the DefaultBGPPeer dynamic neighbor list when using an eBGP underlay.",
 										},
 										"vlan_id": schema.Int64Attribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Configures the provided VLAN on the DefaultInterfaces which are members of the ISLs.",
 											MarkdownDescription: "Configures the provided VLAN on the DefaultInterfaces which are members of the ISLs.",
 										},
@@ -217,30 +217,30 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: InterSwitchLinksValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional: true,
+									Computed: true,
 								},
 								"leafs": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"asn_pool": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
 										"leaf_node_selectors": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "Label selector used to select Toponodes to configure as Leaf nodes.",
 											MarkdownDescription: "Label selector used to select Toponodes to configure as Leaf nodes.",
 										},
 										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 												},
 												"import_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 												},
@@ -250,17 +250,17 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: RouteLeaking1Value{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 											MarkdownDescription: "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 										},
 										"system_pool_ipv4": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
 										"system_pool_ipv6": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
@@ -270,39 +270,69 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: LeafsValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional: true,
+									Computed: true,
+								},
+								"load_balancing": schema.SingleNestedAttribute{
+									Attributes: map[string]schema.Attribute{
+										"dynamic": schema.SingleNestedAttribute{
+											Attributes: map[string]schema.Attribute{
+												"prefixes": schema.ListAttribute{
+													ElementType:         types.StringType,
+													Computed:            true,
+													Description:         "List of IPv4 and/or IPv6 prefixes. Active routes in the FIB that are covered by this list are programmed with dynamic load balancing if conditions are met.",
+													MarkdownDescription: "List of IPv4 and/or IPv6 prefixes. Active routes in the FIB that are covered by this list are programmed with dynamic load balancing if conditions are met.",
+												},
+											},
+											CustomType: DynamicType{
+												ObjectType: types.ObjectType{
+													AttrTypes: DynamicValue{}.AttributeTypes(ctx),
+												},
+											},
+											Computed:            true,
+											Description:         "Dynamic load balancing configuration.",
+											MarkdownDescription: "Dynamic load balancing configuration.",
+										},
+									},
+									CustomType: LoadBalancingType{
+										ObjectType: types.ObjectType{
+											AttrTypes: LoadBalancingValue{}.AttributeTypes(ctx),
+										},
+									},
+									Computed:            true,
+									Description:         "Load Balancing configuration.",
+									MarkdownDescription: "Load Balancing configuration.",
 								},
 								"overlay_protocol": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"bfd": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"desired_min_transmit_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval in milliseconds between transmission of BFD control packets.",
 													MarkdownDescription: "The minimum interval in milliseconds between transmission of BFD control packets.",
 												},
 												"detection_multiplier": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The number of packets that must be missed to declare this session as down.",
 													MarkdownDescription: "The number of packets that must be missed to declare this session as down.",
 												},
 												"enabled": schema.BoolAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Enables Biforward Detection.",
 													MarkdownDescription: "Enables Biforward Detection.",
 												},
 												"required_min_echo_receive_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval between echo packets the local node can receive.",
 													MarkdownDescription: "The minimum interval between echo packets the local node can receive.",
 												},
 												"required_min_receive_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 													MarkdownDescription: "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 												},
 												"ttl": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 													MarkdownDescription: "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 												},
@@ -312,76 +342,76 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: BfdValue{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Enable BFD on overlay protocol",
 											MarkdownDescription: "Enable BFD on overlay protocol",
 										},
 										"bgp": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"autonomous_system": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Autonomous System used for iBGP peering session, when protocol is set to IBGP providing an autonomousSystem is required.",
 													MarkdownDescription: "Autonomous System used for iBGP peering session, when protocol is set to IBGP providing an autonomousSystem is required.",
 												},
 												"cluster_id": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Sets the cluster ID used by DefaultRouteReflectors, when protocol is set to IBGP providing a clusterID is required.",
 													MarkdownDescription: "Sets the cluster ID used by DefaultRouteReflectors, when protocol is set to IBGP providing a clusterID is required.",
 												},
 												"export_policies": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 													MarkdownDescription: "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 												},
 												"import_policies": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 													MarkdownDescription: "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 												},
 												"keychain": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Keychain to be used for authentication when overlay protocol is IBGP, ignored otherwise",
 													MarkdownDescription: "Keychain to be used for authentication when overlay protocol is IBGP, ignored otherwise",
 												},
 												"rr_client_node_selectors": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Label selector used to select Toponodes to configure as DefaultRouteReflectorClients, these are typically Leaf or Borderleaf nodes.  Used on conjunction with rrNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 													MarkdownDescription: "Label selector used to select Toponodes to configure as DefaultRouteReflectorClients, these are typically Leaf or Borderleaf nodes.  Used on conjunction with rrNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 												},
 												"rr_ip_addresses": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "List of route reflector IP addresses not provisioned by this instance of a Fabric resource.  Used with rrClientNodeSelector to configure the DefaultBGPPeers on the selected nodes to peer the list of external route reflector IPs.",
 													MarkdownDescription: "List of route reflector IP addresses not provisioned by this instance of a Fabric resource.  Used with rrClientNodeSelector to configure the DefaultBGPPeers on the selected nodes to peer the list of external route reflector IPs.",
 												},
 												"rr_node_selectors": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Label selector used to select Toponodes to configure as DefaultRouteReflectors, these are typically Spine, Superspine or Borderleaf nodes. Used on conjunction with rrClientNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 													MarkdownDescription: "Label selector used to select Toponodes to configure as DefaultRouteReflectors, these are typically Spine, Superspine or Borderleaf nodes. Used on conjunction with rrClientNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 												},
 												"timers": schema.SingleNestedAttribute{
 													Attributes: map[string]schema.Attribute{
 														"connect_retry_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The time interval in seconds between successive attempts to establish a session with a peer.",
 															MarkdownDescription: "The time interval in seconds between successive attempts to establish a session with a peer.",
 														},
 														"hold_time_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
 															MarkdownDescription: "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
 														},
 														"keep_alive_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The interval in seconds between successive keepalive messages sent to the peer.",
 															MarkdownDescription: "The interval in seconds between successive keepalive messages sent to the peer.",
 														},
 														"minimum_advertisement_interval_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
 															MarkdownDescription: "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
 														},
@@ -391,7 +421,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 															AttrTypes: TimersValue{}.AttributeTypes(ctx),
 														},
 													},
-													Optional:            true,
+													Computed:            true,
 													Description:         "Timer configurations",
 													MarkdownDescription: "Timer configurations",
 												},
@@ -401,12 +431,12 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: BgpValue{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Overlay specific BGP properties.",
 											MarkdownDescription: "Overlay specific BGP properties.",
 										},
 										"protocol": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "List of routing protocols to used to advertise EVPN routes for overlay services.  When EBGP is used, the BGP properties configured under the spec.underlayProtocol will be used.",
 											MarkdownDescription: "List of routing protocols to used to advertise EVPN routes for overlay services.  When EBGP is used, the BGP properties configured under the spec.underlayProtocol will be used.",
 										},
@@ -416,19 +446,19 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional:            true,
+									Computed:            true,
 									Description:         "Set the overlay protocol used",
 									MarkdownDescription: "Set the overlay protocol used",
 								},
 								"route_leaking": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"export_policy": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 											MarkdownDescription: "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 										},
 										"import_policy": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 											MarkdownDescription: "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 										},
@@ -438,26 +468,26 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: RouteLeaking2Value{}.AttributeTypes(ctx),
 										},
 									},
-									Optional:            true,
+									Computed:            true,
 									Description:         "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 									MarkdownDescription: "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 								},
 								"spines": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"asn_pool": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
 										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 												},
 												"import_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 												},
@@ -467,23 +497,23 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: RouteLeaking3Value{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 											MarkdownDescription: "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 										},
 										"spine_node_selectors": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "Label selector used to select Toponodes to configure as Spine nodes.",
 											MarkdownDescription: "Label selector used to select Toponodes to configure as Spine nodes.",
 										},
 										"system_pool_ipv4": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
 										"system_pool_ipv6": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
@@ -493,24 +523,24 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: SpinesValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional: true,
+									Computed: true,
 								},
 								"super_spines": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"asn_pool": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
 										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
 												},
 												"import_policy": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 													MarkdownDescription: "Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.",
 												},
@@ -520,23 +550,23 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: RouteLeaking4Value{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 											MarkdownDescription: "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
 										},
 										"super_spine_node_selectors": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "Label selector used to select Toponodes to configure as Superspine nodes.",
 											MarkdownDescription: "Label selector used to select Toponodes to configure as Superspine nodes.",
 										},
 										"system_pool_ipv4": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
 										"system_pool_ipv6": schema.StringAttribute{
-											Optional:            true,
+											Computed:            true,
 											Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 											MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 										},
@@ -546,15 +576,15 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: SuperSpinesValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional: true,
+									Computed: true,
 								},
 								"system_pool_ipv4": schema.StringAttribute{
-									Optional:            true,
+									Computed:            true,
 									Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 									MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 								},
 								"system_pool_ipv6": schema.StringAttribute{
-									Optional:            true,
+									Computed:            true,
 									Description:         "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 									MarkdownDescription: "Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.",
 								},
@@ -563,32 +593,32 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 										"bfd": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"desired_min_transmit_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval in milliseconds between transmission of BFD control packets.",
 													MarkdownDescription: "The minimum interval in milliseconds between transmission of BFD control packets.",
 												},
 												"detection_multiplier": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The number of packets that must be missed to declare this session as down.",
 													MarkdownDescription: "The number of packets that must be missed to declare this session as down.",
 												},
 												"enabled": schema.BoolAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Enables Biforward Detection.",
 													MarkdownDescription: "Enables Biforward Detection.",
 												},
 												"required_min_echo_receive_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval between echo packets the local node can receive.",
 													MarkdownDescription: "The minimum interval between echo packets the local node can receive.",
 												},
 												"required_min_receive_int_ms": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 													MarkdownDescription: "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 												},
 												"ttl": schema.Int64Attribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 													MarkdownDescription: "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 												},
@@ -598,53 +628,53 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: Bfd1Value{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Enable BFD on underlay protocol",
 											MarkdownDescription: "Enable BFD on underlay protocol",
 										},
 										"bgp": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"asn_pool": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.",
 													MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.",
 												},
 												"export_policies": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 													MarkdownDescription: "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 												},
 												"import_policies": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 													MarkdownDescription: "Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.",
 												},
 												"keychain": schema.StringAttribute{
-													Optional:            true,
+													Computed:            true,
 													Description:         "Keychain to be used for authentication",
 													MarkdownDescription: "Keychain to be used for authentication",
 												},
 												"timers": schema.SingleNestedAttribute{
 													Attributes: map[string]schema.Attribute{
 														"connect_retry_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The time interval in seconds between successive attempts to establish a session with a peer.",
 															MarkdownDescription: "The time interval in seconds between successive attempts to establish a session with a peer.",
 														},
 														"hold_time_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
 															MarkdownDescription: "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
 														},
 														"keep_alive_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The interval in seconds between successive keepalive messages sent to the peer.",
 															MarkdownDescription: "The interval in seconds between successive keepalive messages sent to the peer.",
 														},
 														"minimum_advertisement_interval_seconds": schema.Int64Attribute{
-															Optional:            true,
+															Computed:            true,
 															Description:         "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
 															MarkdownDescription: "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
 														},
@@ -654,7 +684,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 															AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 														},
 													},
-													Optional:            true,
+													Computed:            true,
 													Description:         "Timer configurations",
 													MarkdownDescription: "Timer configurations",
 												},
@@ -664,7 +694,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: Bgp1Value{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "Underlay specific BGP properties.",
 											MarkdownDescription: "Underlay specific BGP properties.",
 										},
@@ -672,9 +702,14 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											Attributes: map[string]schema.Attribute{
 												"address_families": schema.ListAttribute{
 													ElementType:         types.StringType,
-													Optional:            true,
+													Computed:            true,
 													Description:         "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured.",
 													MarkdownDescription: "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured.",
+												},
+												"keychain": schema.StringAttribute{
+													Computed:            true,
+													Description:         "Keychain to be used for authentication",
+													MarkdownDescription: "Keychain to be used for authentication",
 												},
 											},
 											CustomType: OspfType{
@@ -682,13 +717,13 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													AttrTypes: OspfValue{}.AttributeTypes(ctx),
 												},
 											},
-											Optional:            true,
+											Computed:            true,
 											Description:         "OSPF underlay properties.",
 											MarkdownDescription: "OSPF underlay properties.",
 										},
 										"protocols": schema.ListAttribute{
 											ElementType:         types.StringType,
-											Optional:            true,
+											Computed:            true,
 											Description:         "List of routing protocols to used between peers of an ISL.  Multiple protocols may be listed, if so multiple protocols will be used.",
 											MarkdownDescription: "List of routing protocols to used between peers of an ISL.  Multiple protocols may be listed, if so multiple protocols will be used.",
 										},
@@ -698,7 +733,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											AttrTypes: UnderlayProtocolValue{}.AttributeTypes(ctx),
 										},
 									},
-									Optional:            true,
+									Computed:            true,
 									Description:         "Set the underlay protocol used",
 									MarkdownDescription: "Set the underlay protocol used",
 								},
@@ -708,7 +743,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 									AttrTypes: SpecValue{}.AttributeTypes(ctx),
 								},
 							},
-							Optional:            true,
+							Computed:            true,
 							Description:         "The Fabric defines the desired state of a Fabric resource, enabling the automation and management of data center network fabrics. It includes configurations for IP address allocation pools, network topology roles (Leafs, Spines, SuperSpines, BorderLeafs), inter-switch links, and network protocols (underlay and overlay). The specification allows for detailed control over routing strategies, including ASN allocations for BGP-based protocols, and supports advanced features like BFD.",
 							MarkdownDescription: "The Fabric defines the desired state of a Fabric resource, enabling the automation and management of data center network fabrics. It includes configurations for IP address allocation pools, network topology roles (Leafs, Spines, SuperSpines, BorderLeafs), inter-switch links, and network protocols (underlay and overlay). The specification allows for detailed control over routing strategies, including ASN allocations for BGP-based protocols, and supports advanced features like BFD.",
 						},
@@ -3174,6 +3209,24 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`leafs expected to be basetypes.ObjectValue, was: %T`, leafsAttribute))
 	}
 
+	loadBalancingAttribute, ok := attributes["load_balancing"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`load_balancing is missing from object`)
+
+		return nil, diags
+	}
+
+	loadBalancingVal, ok := loadBalancingAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`load_balancing expected to be basetypes.ObjectValue, was: %T`, loadBalancingAttribute))
+	}
+
 	overlayProtocolAttribute, ok := attributes["overlay_protocol"]
 
 	if !ok {
@@ -3309,6 +3362,7 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 		FabricSelectors:  fabricSelectorsVal,
 		InterSwitchLinks: interSwitchLinksVal,
 		Leafs:            leafsVal,
+		LoadBalancing:    loadBalancingVal,
 		OverlayProtocol:  overlayProtocolVal,
 		RouteLeaking2:    routeLeaking2Val,
 		Spines:           spinesVal,
@@ -3455,6 +3509,24 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`leafs expected to be basetypes.ObjectValue, was: %T`, leafsAttribute))
 	}
 
+	loadBalancingAttribute, ok := attributes["load_balancing"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`load_balancing is missing from object`)
+
+		return NewSpecValueUnknown(), diags
+	}
+
+	loadBalancingVal, ok := loadBalancingAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`load_balancing expected to be basetypes.ObjectValue, was: %T`, loadBalancingAttribute))
+	}
+
 	overlayProtocolAttribute, ok := attributes["overlay_protocol"]
 
 	if !ok {
@@ -3590,6 +3662,7 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 		FabricSelectors:  fabricSelectorsVal,
 		InterSwitchLinks: interSwitchLinksVal,
 		Leafs:            leafsVal,
+		LoadBalancing:    loadBalancingVal,
 		OverlayProtocol:  overlayProtocolVal,
 		RouteLeaking2:    routeLeaking2Val,
 		Spines:           spinesVal,
@@ -3673,6 +3746,7 @@ type SpecValue struct {
 	FabricSelectors  basetypes.ListValue   `tfsdk:"fabric_selectors"`
 	InterSwitchLinks basetypes.ObjectValue `tfsdk:"inter_switch_links"`
 	Leafs            basetypes.ObjectValue `tfsdk:"leafs"`
+	LoadBalancing    basetypes.ObjectValue `tfsdk:"load_balancing"`
 	OverlayProtocol  basetypes.ObjectValue `tfsdk:"overlay_protocol"`
 	RouteLeaking2    basetypes.ObjectValue `tfsdk:"route_leaking"`
 	Spines           basetypes.ObjectValue `tfsdk:"spines"`
@@ -3684,7 +3758,7 @@ type SpecValue struct {
 }
 
 func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 11)
+	attrTypes := make(map[string]tftypes.Type, 12)
 
 	var val tftypes.Value
 	var err error
@@ -3700,6 +3774,9 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 	}.TerraformType(ctx)
 	attrTypes["leafs"] = basetypes.ObjectType{
 		AttrTypes: LeafsValue{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
+	attrTypes["load_balancing"] = basetypes.ObjectType{
+		AttrTypes: LoadBalancingValue{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["overlay_protocol"] = basetypes.ObjectType{
 		AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
@@ -3723,7 +3800,7 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 11)
+		vals := make(map[string]tftypes.Value, 12)
 
 		val, err = v.BorderLeafs.ToTerraformValue(ctx)
 
@@ -3756,6 +3833,14 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		}
 
 		vals["leafs"] = val
+
+		val, err = v.LoadBalancing.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["load_balancing"] = val
 
 		val, err = v.OverlayProtocol.ToTerraformValue(ctx)
 
@@ -3905,6 +3990,27 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		)
 	}
 
+	var loadBalancing basetypes.ObjectValue
+
+	if v.LoadBalancing.IsNull() {
+		loadBalancing = types.ObjectNull(
+			LoadBalancingValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.LoadBalancing.IsUnknown() {
+		loadBalancing = types.ObjectUnknown(
+			LoadBalancingValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.LoadBalancing.IsNull() && !v.LoadBalancing.IsUnknown() {
+		loadBalancing = types.ObjectValueMust(
+			LoadBalancingValue{}.AttributeTypes(ctx),
+			v.LoadBalancing.Attributes(),
+		)
+	}
+
 	var overlayProtocol basetypes.ObjectValue
 
 	if v.OverlayProtocol.IsNull() {
@@ -4036,6 +4142,9 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"leafs": basetypes.ObjectType{
 				AttrTypes: LeafsValue{}.AttributeTypes(ctx),
 			},
+			"load_balancing": basetypes.ObjectType{
+				AttrTypes: LoadBalancingValue{}.AttributeTypes(ctx),
+			},
 			"overlay_protocol": basetypes.ObjectType{
 				AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 			},
@@ -4068,6 +4177,9 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		},
 		"leafs": basetypes.ObjectType{
 			AttrTypes: LeafsValue{}.AttributeTypes(ctx),
+		},
+		"load_balancing": basetypes.ObjectType{
+			AttrTypes: LoadBalancingValue{}.AttributeTypes(ctx),
 		},
 		"overlay_protocol": basetypes.ObjectType{
 			AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
@@ -4103,6 +4215,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"fabric_selectors":   fabricSelectorsVal,
 			"inter_switch_links": interSwitchLinks,
 			"leafs":              leafs,
+			"load_balancing":     loadBalancing,
 			"overlay_protocol":   overlayProtocol,
 			"route_leaking":      routeLeaking2,
 			"spines":             spines,
@@ -4143,6 +4256,10 @@ func (v SpecValue) Equal(o attr.Value) bool {
 	}
 
 	if !v.Leafs.Equal(other.Leafs) {
+		return false
+	}
+
+	if !v.LoadBalancing.Equal(other.LoadBalancing) {
 		return false
 	}
 
@@ -4198,6 +4315,9 @@ func (v SpecValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		},
 		"leafs": basetypes.ObjectType{
 			AttrTypes: LeafsValue{}.AttributeTypes(ctx),
+		},
+		"load_balancing": basetypes.ObjectType{
+			AttrTypes: LoadBalancingValue{}.AttributeTypes(ctx),
 		},
 		"overlay_protocol": basetypes.ObjectType{
 			AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
@@ -7274,6 +7394,707 @@ func (v RouteLeaking1Value) AttributeTypes(ctx context.Context) map[string]attr.
 	return map[string]attr.Type{
 		"export_policy": basetypes.StringType{},
 		"import_policy": basetypes.StringType{},
+	}
+}
+
+var _ basetypes.ObjectTypable = LoadBalancingType{}
+
+type LoadBalancingType struct {
+	basetypes.ObjectType
+}
+
+func (t LoadBalancingType) Equal(o attr.Type) bool {
+	other, ok := o.(LoadBalancingType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t LoadBalancingType) String() string {
+	return "LoadBalancingType"
+}
+
+func (t LoadBalancingType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	dynamicAttribute, ok := attributes["dynamic"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`dynamic is missing from object`)
+
+		return nil, diags
+	}
+
+	dynamicVal, ok := dynamicAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`dynamic expected to be basetypes.ObjectValue, was: %T`, dynamicAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return LoadBalancingValue{
+		Dynamic: dynamicVal,
+		state:   attr.ValueStateKnown,
+	}, diags
+}
+
+func NewLoadBalancingValueNull() LoadBalancingValue {
+	return LoadBalancingValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewLoadBalancingValueUnknown() LoadBalancingValue {
+	return LoadBalancingValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewLoadBalancingValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (LoadBalancingValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing LoadBalancingValue Attribute Value",
+				"While creating a LoadBalancingValue value, a missing attribute value was detected. "+
+					"A LoadBalancingValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("LoadBalancingValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid LoadBalancingValue Attribute Type",
+				"While creating a LoadBalancingValue value, an invalid attribute value was detected. "+
+					"A LoadBalancingValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("LoadBalancingValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("LoadBalancingValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra LoadBalancingValue Attribute Value",
+				"While creating a LoadBalancingValue value, an extra attribute value was detected. "+
+					"A LoadBalancingValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra LoadBalancingValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewLoadBalancingValueUnknown(), diags
+	}
+
+	dynamicAttribute, ok := attributes["dynamic"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`dynamic is missing from object`)
+
+		return NewLoadBalancingValueUnknown(), diags
+	}
+
+	dynamicVal, ok := dynamicAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`dynamic expected to be basetypes.ObjectValue, was: %T`, dynamicAttribute))
+	}
+
+	if diags.HasError() {
+		return NewLoadBalancingValueUnknown(), diags
+	}
+
+	return LoadBalancingValue{
+		Dynamic: dynamicVal,
+		state:   attr.ValueStateKnown,
+	}, diags
+}
+
+func NewLoadBalancingValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) LoadBalancingValue {
+	object, diags := NewLoadBalancingValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewLoadBalancingValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t LoadBalancingType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewLoadBalancingValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewLoadBalancingValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewLoadBalancingValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewLoadBalancingValueMust(LoadBalancingValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t LoadBalancingType) ValueType(ctx context.Context) attr.Value {
+	return LoadBalancingValue{}
+}
+
+var _ basetypes.ObjectValuable = LoadBalancingValue{}
+
+type LoadBalancingValue struct {
+	Dynamic basetypes.ObjectValue `tfsdk:"dynamic"`
+	state   attr.ValueState
+}
+
+func (v LoadBalancingValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 1)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["dynamic"] = basetypes.ObjectType{
+		AttrTypes: DynamicValue{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 1)
+
+		val, err = v.Dynamic.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["dynamic"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v LoadBalancingValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v LoadBalancingValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v LoadBalancingValue) String() string {
+	return "LoadBalancingValue"
+}
+
+func (v LoadBalancingValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	var dynamic basetypes.ObjectValue
+
+	if v.Dynamic.IsNull() {
+		dynamic = types.ObjectNull(
+			DynamicValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.Dynamic.IsUnknown() {
+		dynamic = types.ObjectUnknown(
+			DynamicValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.Dynamic.IsNull() && !v.Dynamic.IsUnknown() {
+		dynamic = types.ObjectValueMust(
+			DynamicValue{}.AttributeTypes(ctx),
+			v.Dynamic.Attributes(),
+		)
+	}
+
+	attributeTypes := map[string]attr.Type{
+		"dynamic": basetypes.ObjectType{
+			AttrTypes: DynamicValue{}.AttributeTypes(ctx),
+		},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"dynamic": dynamic,
+		})
+
+	return objVal, diags
+}
+
+func (v LoadBalancingValue) Equal(o attr.Value) bool {
+	other, ok := o.(LoadBalancingValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.Dynamic.Equal(other.Dynamic) {
+		return false
+	}
+
+	return true
+}
+
+func (v LoadBalancingValue) Type(ctx context.Context) attr.Type {
+	return LoadBalancingType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v LoadBalancingValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"dynamic": basetypes.ObjectType{
+			AttrTypes: DynamicValue{}.AttributeTypes(ctx),
+		},
+	}
+}
+
+var _ basetypes.ObjectTypable = DynamicType{}
+
+type DynamicType struct {
+	basetypes.ObjectType
+}
+
+func (t DynamicType) Equal(o attr.Type) bool {
+	other, ok := o.(DynamicType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t DynamicType) String() string {
+	return "DynamicType"
+}
+
+func (t DynamicType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	prefixesAttribute, ok := attributes["prefixes"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`prefixes is missing from object`)
+
+		return nil, diags
+	}
+
+	prefixesVal, ok := prefixesAttribute.(basetypes.ListValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`prefixes expected to be basetypes.ListValue, was: %T`, prefixesAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return DynamicValue{
+		Prefixes: prefixesVal,
+		state:    attr.ValueStateKnown,
+	}, diags
+}
+
+func NewDynamicValueNull() DynamicValue {
+	return DynamicValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewDynamicValueUnknown() DynamicValue {
+	return DynamicValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewDynamicValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (DynamicValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing DynamicValue Attribute Value",
+				"While creating a DynamicValue value, a missing attribute value was detected. "+
+					"A DynamicValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("DynamicValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid DynamicValue Attribute Type",
+				"While creating a DynamicValue value, an invalid attribute value was detected. "+
+					"A DynamicValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("DynamicValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("DynamicValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra DynamicValue Attribute Value",
+				"While creating a DynamicValue value, an extra attribute value was detected. "+
+					"A DynamicValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra DynamicValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewDynamicValueUnknown(), diags
+	}
+
+	prefixesAttribute, ok := attributes["prefixes"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`prefixes is missing from object`)
+
+		return NewDynamicValueUnknown(), diags
+	}
+
+	prefixesVal, ok := prefixesAttribute.(basetypes.ListValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`prefixes expected to be basetypes.ListValue, was: %T`, prefixesAttribute))
+	}
+
+	if diags.HasError() {
+		return NewDynamicValueUnknown(), diags
+	}
+
+	return DynamicValue{
+		Prefixes: prefixesVal,
+		state:    attr.ValueStateKnown,
+	}, diags
+}
+
+func NewDynamicValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) DynamicValue {
+	object, diags := NewDynamicValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewDynamicValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t DynamicType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewDynamicValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewDynamicValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewDynamicValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewDynamicValueMust(DynamicValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t DynamicType) ValueType(ctx context.Context) attr.Value {
+	return DynamicValue{}
+}
+
+var _ basetypes.ObjectValuable = DynamicValue{}
+
+type DynamicValue struct {
+	Prefixes basetypes.ListValue `tfsdk:"prefixes"`
+	state    attr.ValueState
+}
+
+func (v DynamicValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 1)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["prefixes"] = basetypes.ListType{
+		ElemType: types.StringType,
+	}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 1)
+
+		val, err = v.Prefixes.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["prefixes"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v DynamicValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v DynamicValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v DynamicValue) String() string {
+	return "DynamicValue"
+}
+
+func (v DynamicValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	var prefixesVal basetypes.ListValue
+	switch {
+	case v.Prefixes.IsUnknown():
+		prefixesVal = types.ListUnknown(types.StringType)
+	case v.Prefixes.IsNull():
+		prefixesVal = types.ListNull(types.StringType)
+	default:
+		var d diag.Diagnostics
+		prefixesVal, d = types.ListValue(types.StringType, v.Prefixes.Elements())
+		diags.Append(d...)
+	}
+
+	if diags.HasError() {
+		return types.ObjectUnknown(map[string]attr.Type{
+			"prefixes": basetypes.ListType{
+				ElemType: types.StringType,
+			},
+		}), diags
+	}
+
+	attributeTypes := map[string]attr.Type{
+		"prefixes": basetypes.ListType{
+			ElemType: types.StringType,
+		},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"prefixes": prefixesVal,
+		})
+
+	return objVal, diags
+}
+
+func (v DynamicValue) Equal(o attr.Value) bool {
+	other, ok := o.(DynamicValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.Prefixes.Equal(other.Prefixes) {
+		return false
+	}
+
+	return true
+}
+
+func (v DynamicValue) Type(ctx context.Context) attr.Type {
+	return DynamicType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v DynamicValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"prefixes": basetypes.ListType{
+			ElemType: types.StringType,
+		},
 	}
 }
 
@@ -14582,12 +15403,31 @@ func (t OspfType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`address_families expected to be basetypes.ListValue, was: %T`, addressFamiliesAttribute))
 	}
 
+	keychainAttribute, ok := attributes["keychain"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`keychain is missing from object`)
+
+		return nil, diags
+	}
+
+	keychainVal, ok := keychainAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
+	}
+
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	return OspfValue{
 		AddressFamilies: addressFamiliesVal,
+		Keychain:        keychainVal,
 		state:           attr.ValueStateKnown,
 	}, diags
 }
@@ -14673,12 +15513,31 @@ func NewOspfValue(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`address_families expected to be basetypes.ListValue, was: %T`, addressFamiliesAttribute))
 	}
 
+	keychainAttribute, ok := attributes["keychain"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`keychain is missing from object`)
+
+		return NewOspfValueUnknown(), diags
+	}
+
+	keychainVal, ok := keychainAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
+	}
+
 	if diags.HasError() {
 		return NewOspfValueUnknown(), diags
 	}
 
 	return OspfValue{
 		AddressFamilies: addressFamiliesVal,
+		Keychain:        keychainVal,
 		state:           attr.ValueStateKnown,
 	}, diags
 }
@@ -14751,12 +15610,13 @@ func (t OspfType) ValueType(ctx context.Context) attr.Value {
 var _ basetypes.ObjectValuable = OspfValue{}
 
 type OspfValue struct {
-	AddressFamilies basetypes.ListValue `tfsdk:"address_families"`
+	AddressFamilies basetypes.ListValue   `tfsdk:"address_families"`
+	Keychain        basetypes.StringValue `tfsdk:"keychain"`
 	state           attr.ValueState
 }
 
 func (v OspfValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 1)
+	attrTypes := make(map[string]tftypes.Type, 2)
 
 	var val tftypes.Value
 	var err error
@@ -14764,12 +15624,13 @@ func (v OspfValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 	attrTypes["address_families"] = basetypes.ListType{
 		ElemType: types.StringType,
 	}.TerraformType(ctx)
+	attrTypes["keychain"] = basetypes.StringType{}.TerraformType(ctx)
 
 	objectType := tftypes.Object{AttributeTypes: attrTypes}
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 1)
+		vals := make(map[string]tftypes.Value, 2)
 
 		val, err = v.AddressFamilies.ToTerraformValue(ctx)
 
@@ -14778,6 +15639,14 @@ func (v OspfValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		}
 
 		vals["address_families"] = val
+
+		val, err = v.Keychain.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["keychain"] = val
 
 		if err := tftypes.ValidateValue(objectType, vals); err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
@@ -14825,6 +15694,7 @@ func (v OspfValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"address_families": basetypes.ListType{
 				ElemType: types.StringType,
 			},
+			"keychain": basetypes.StringType{},
 		}), diags
 	}
 
@@ -14832,6 +15702,7 @@ func (v OspfValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		"address_families": basetypes.ListType{
 			ElemType: types.StringType,
 		},
+		"keychain": basetypes.StringType{},
 	}
 
 	if v.IsNull() {
@@ -14846,6 +15717,7 @@ func (v OspfValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		attributeTypes,
 		map[string]attr.Value{
 			"address_families": addressFamiliesVal,
+			"keychain":         v.Keychain,
 		})
 
 	return objVal, diags
@@ -14870,6 +15742,10 @@ func (v OspfValue) Equal(o attr.Value) bool {
 		return false
 	}
 
+	if !v.Keychain.Equal(other.Keychain) {
+		return false
+	}
+
 	return true
 }
 
@@ -14886,6 +15762,7 @@ func (v OspfValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"address_families": basetypes.ListType{
 			ElemType: types.StringType,
 		},
+		"keychain": basetypes.StringType{},
 	}
 }
 

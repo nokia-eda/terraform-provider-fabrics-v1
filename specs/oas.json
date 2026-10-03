@@ -84,9 +84,7 @@
             "type": "string"
           },
           "values": {
-            "additionalProperties": {
-              "type": "object"
-            },
+            "additionalProperties": true,
             "description": "Associated data/information.\nThe error \"message\" may contain {{name}} escapes that should be substituted with information from this dictionary.\n\nNote that this map MUST NOT contain JSON objects (`{...}`) or arrays (`[...]`), only simple JSON types are permitted.",
             "type": "object"
           }
@@ -149,6 +147,10 @@
           "x-permissive": {
             "description": "For an \"add\" operation, an already-present field referenced by the \"path\" will\nresult in an error unless this field is true.  Similarly for a non-existent\ntarget field of a \"remove\" operation.",
             "type": "boolean"
+          },
+          "x-ui-annotation": {
+            "description": "Metadata maintained in support of the EDA UI.  External use not recommended.",
+            "type": "string"
           }
         },
         "required": [
@@ -581,10 +583,16 @@
           "endpoint_a_name": {
             "type": "string"
           },
+          "endpoint_a_namespace": {
+            "type": "string"
+          },
           "endpoint_b": {
             "$ref": "#/components/schemas/TopoOverlayEndpoint"
           },
           "endpoint_b_name": {
+            "type": "string"
+          },
+          "endpoint_b_namespace": {
             "type": "string"
           },
           "group_key": {
@@ -1173,6 +1181,7 @@
                 "properties": {
                   "ipMTU": {
                     "description": "Sets the IP MTU for the DefaultInterface.",
+                    "format": "int32",
                     "maximum": 9486,
                     "minimum": 1280,
                     "title": "IP MTU",
@@ -1300,6 +1309,7 @@
                   },
                   "vlanID": {
                     "description": "Configures the provided VLAN on the DefaultInterfaces which are members of the ISLs.",
+                    "format": "int32",
                     "maximum": 4094,
                     "minimum": 1,
                     "title": "VLAN ID - InterSwitch Link",
@@ -1455,6 +1465,40 @@
                   "ui-order-priority": 400
                 }
               },
+              "loadBalancing": {
+                "description": "Load Balancing configuration.",
+                "properties": {
+                  "dynamic": {
+                    "description": "Dynamic load balancing configuration.",
+                    "properties": {
+                      "prefixes": {
+                        "description": "List of IPv4 and/or IPv6 prefixes. Active routes in the FIB that are covered by this list are programmed with dynamic load balancing if conditions are met.",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "title": "Prefixes",
+                        "type": "array",
+                        "x-eda-nokia-com": {
+                          "ui-column-span": 2,
+                          "ui-order-priority": 500
+                        }
+                      }
+                    },
+                    "title": "Dynamic Load Balancing",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 13000
+                    }
+                  }
+                },
+                "title": "Load Balancing",
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-column-span": 4,
+                  "ui-order-priority": 6000
+                }
+              },
               "overlayProtocol": {
                 "description": "Set the overlay protocol used",
                 "properties": {
@@ -1464,6 +1508,7 @@
                       "desiredMinTransmitIntMs": {
                         "default": 1000,
                         "description": "The minimum interval in milliseconds between transmission of BFD control packets.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 10,
                         "title": "Transmit Interval",
@@ -1479,6 +1524,7 @@
                       "detectionMultiplier": {
                         "default": 3,
                         "description": "The number of packets that must be missed to declare this session as down.",
+                        "format": "int32",
                         "maximum": 20,
                         "minimum": 3,
                         "title": "Multiplier",
@@ -1499,12 +1545,27 @@
                         "x-eda-nokia-com": {
                           "ui-category": "BFD",
                           "ui-column-span": 1,
-                          "ui-order-priority": 300
+                          "ui-order-priority": 300,
+                          "ui-render": [
+                            {
+                              "color": "kpi_info",
+                              "condition": "field===true",
+                              "icon": "ToggleOn",
+                              "text": "True"
+                            },
+                            {
+                              "color": "kpi_disabled",
+                              "condition": "field===false",
+                              "icon": "ToggleOff",
+                              "text": "False"
+                            }
+                          ]
                         }
                       },
                       "requiredMinEchoReceiveIntMs": {
                         "default": 1000,
                         "description": "The minimum interval between echo packets the local node can receive.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 0,
                         "title": "Minimum Echo Receive Interval",
@@ -1520,6 +1581,7 @@
                       "requiredMinReceiveIntMs": {
                         "default": 1000,
                         "description": "The minimum interval in milliseconds between received BFD control packets that this system should support.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 10,
                         "title": "Receive Interval",
@@ -1534,6 +1596,7 @@
                       },
                       "ttl": {
                         "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
+                        "format": "int32",
                         "maximum": 255,
                         "minimum": 2,
                         "title": "IP TTL/Hop Limit",
@@ -1560,7 +1623,9 @@
                     "properties": {
                       "autonomousSystem": {
                         "description": "Autonomous System used for iBGP peering session, when protocol is set to IBGP providing an autonomousSystem is required.",
-                        "format": "int32",
+                        "format": "int64",
+                        "maximum": 4294967295,
+                        "minimum": 1,
                         "title": "Autonomous System",
                         "type": "integer",
                         "x-eda-nokia-com": {
@@ -1650,8 +1715,8 @@
                           "ui-auto-completes": [
                             {
                               "condition": "true",
-                              "group": "protocols.eda.nokia.com",
-                              "kind": "DefaultRouteReflectorClient",
+                              "group": "core.eda.nokia.com",
+                              "kind": "TopoNode",
                               "type": "labelselector"
                             }
                           ],
@@ -1684,8 +1749,8 @@
                           "ui-auto-completes": [
                             {
                               "condition": "true",
-                              "group": "protocols.eda.nokia.com",
-                              "kind": "DefaultRouteReflector",
+                              "group": "core.eda.nokia.com",
+                              "kind": "TopoNode",
                               "type": "labelselector"
                             }
                           ],
@@ -1698,6 +1763,7 @@
                         "properties": {
                           "connectRetrySeconds": {
                             "description": "The time interval in seconds between successive attempts to establish a session with a peer.",
+                            "format": "int32",
                             "maximum": 65535,
                             "minimum": 1,
                             "title": "Connect Retry",
@@ -1709,6 +1775,7 @@
                           },
                           "holdTimeSeconds": {
                             "description": "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
+                            "format": "int32",
                             "maximum": 65535,
                             "minimum": 0,
                             "title": "Hold Time",
@@ -1721,6 +1788,7 @@
                           },
                           "keepAliveSeconds": {
                             "description": "The interval in seconds between successive keepalive messages sent to the peer.",
+                            "format": "int32",
                             "maximum": 21845,
                             "minimum": 0,
                             "title": "Keep Alive",
@@ -1733,6 +1801,7 @@
                           },
                           "minimumAdvertisementIntervalSeconds": {
                             "description": "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
+                            "format": "int32",
                             "maximum": 255,
                             "minimum": 1,
                             "title": "Minimum Advertisement Interval",
@@ -2153,6 +2222,7 @@
                       "desiredMinTransmitIntMs": {
                         "default": 1000,
                         "description": "The minimum interval in milliseconds between transmission of BFD control packets.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 10,
                         "title": "Transmit Interval",
@@ -2168,6 +2238,7 @@
                       "detectionMultiplier": {
                         "default": 3,
                         "description": "The number of packets that must be missed to declare this session as down.",
+                        "format": "int32",
                         "maximum": 20,
                         "minimum": 3,
                         "title": "Multiplier",
@@ -2188,12 +2259,27 @@
                         "x-eda-nokia-com": {
                           "ui-category": "BFD",
                           "ui-column-span": 1,
-                          "ui-order-priority": 300
+                          "ui-order-priority": 300,
+                          "ui-render": [
+                            {
+                              "color": "kpi_info",
+                              "condition": "field===true",
+                              "icon": "ToggleOn",
+                              "text": "True"
+                            },
+                            {
+                              "color": "kpi_disabled",
+                              "condition": "field===false",
+                              "icon": "ToggleOff",
+                              "text": "False"
+                            }
+                          ]
                         }
                       },
                       "requiredMinEchoReceiveIntMs": {
                         "default": 1000,
                         "description": "The minimum interval between echo packets the local node can receive.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 0,
                         "title": "Minimum Echo Receive Interval",
@@ -2209,6 +2295,7 @@
                       "requiredMinReceiveIntMs": {
                         "default": 1000,
                         "description": "The minimum interval in milliseconds between received BFD control packets that this system should support.",
+                        "format": "int32",
                         "maximum": 100000,
                         "minimum": 10,
                         "title": "Receive Interval",
@@ -2223,6 +2310,7 @@
                       },
                       "ttl": {
                         "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
+                        "format": "int32",
                         "maximum": 255,
                         "minimum": 2,
                         "title": "IP TTL/Hop Limit",
@@ -2323,6 +2411,7 @@
                         "properties": {
                           "connectRetrySeconds": {
                             "description": "The time interval in seconds between successive attempts to establish a session with a peer.",
+                            "format": "int32",
                             "maximum": 65535,
                             "minimum": 1,
                             "title": "Connect Retry",
@@ -2334,6 +2423,7 @@
                           },
                           "holdTimeSeconds": {
                             "description": "The hold-time interval in seconds that the router proposes to the peer in its OPEN message.",
+                            "format": "int32",
                             "maximum": 65535,
                             "minimum": 0,
                             "title": "Hold Time",
@@ -2346,6 +2436,7 @@
                           },
                           "keepAliveSeconds": {
                             "description": "The interval in seconds between successive keepalive messages sent to the peer.",
+                            "format": "int32",
                             "maximum": 21845,
                             "minimum": 0,
                             "title": "Keep Alive",
@@ -2358,6 +2449,7 @@
                           },
                           "minimumAdvertisementIntervalSeconds": {
                             "description": "The value assigned to the MinRouteAdvertisementIntervalTimer of RFC 4271, for both EBGP and IBGP sessions.",
+                            "format": "int32",
                             "maximum": 255,
                             "minimum": 1,
                             "title": "Minimum Advertisement Interval",
@@ -2397,6 +2489,15 @@
                           "ui-column-span": 2,
                           "ui-order-priority": 1500
                         }
+                      },
+                      "keychain": {
+                        "description": "Keychain to be used for authentication",
+                        "title": "Keychain",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-column-span": 2,
+                          "ui-order-priority": 1600
+                        }
                       }
                     },
                     "title": "OSPF",
@@ -2408,11 +2509,12 @@
                       "enum": [
                         "EBGP",
                         "OSPFv2",
-                        "OSPFv3"
+                        "OSPFv3",
+                        "ISIS"
                       ],
                       "type": "string"
                     },
-                    "title": "Protocol",
+                    "title": "Protocols",
                     "type": "array",
                     "x-eda-nokia-com": {
                       "ui-category": "UnderlayProtocol",
@@ -2461,7 +2563,9 @@
                     },
                     "underlayAutonomousSystem": {
                       "description": "Underlay Autonomous System used for eBGP peering session, when protocol is set to eBGP this is required.",
-                      "format": "int32",
+                      "format": "int64",
+                      "maximum": 4294967295,
+                      "minimum": 1,
                       "title": "Underlay Autonomous System",
                       "type": "integer"
                     }
@@ -2476,6 +2580,8 @@
               },
               "health": {
                 "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emitted by the Fabric such as ISL, DefaultRouteReflectors etc.",
+                "format": "int32",
+                "maximum": 100,
                 "title": "Health",
                 "type": "integer",
                 "x-eda-nokia-com": {
@@ -2522,7 +2628,9 @@
                     },
                     "underlayAutonomousSystem": {
                       "description": "Underlay Autonomous System used for eBGP peering session, when protocol is set to eBGP this is required.",
-                      "format": "int32",
+                      "format": "int64",
+                      "maximum": 4294967295,
+                      "minimum": 1,
                       "title": "Underlay Autonomous System",
                       "type": "integer"
                     }
@@ -2548,6 +2656,28 @@
                 "x-eda-nokia-com": {
                   "ui-column-span": 2,
                   "ui-order-priority": 100,
+                  "ui-render": [
+                    {
+                      "color": "kpi_success",
+                      "condition": "field===\"Up\"",
+                      "icon": "ArrowUpCircle"
+                    },
+                    {
+                      "color": "kpi_major",
+                      "condition": "field===\"Degraded\"",
+                      "icon": "AlarmCircle"
+                    },
+                    {
+                      "color": "kpi_critical",
+                      "condition": "field===\"Down\"",
+                      "icon": "ArrowDownCircle"
+                    },
+                    {
+                      "color": "kpi_warning",
+                      "condition": "field===\"Unknown\"",
+                      "icon": "RemoveCircle"
+                    }
+                  ],
                   "ui-single-line-group": "Health"
                 }
               },
@@ -2572,7 +2702,9 @@
                     },
                     "underlayAutonomousSystem": {
                       "description": "Underlay Autonomous System used for eBGP peering session, when protocol is set to eBGP this is required.",
-                      "format": "int32",
+                      "format": "int64",
+                      "maximum": 4294967295,
+                      "minimum": 1,
                       "title": "Underlay Autonomous System",
                       "type": "integer"
                     }
@@ -2606,7 +2738,9 @@
                     },
                     "underlayAutonomousSystem": {
                       "description": "Underlay Autonomous System used for eBGP peering session, when protocol is set to eBGP this is required.",
-                      "format": "int32",
+                      "format": "int64",
+                      "maximum": 4294967295,
+                      "minimum": 1,
                       "title": "Underlay Autonomous System",
                       "type": "integer"
                     }
@@ -2646,11 +2780,11 @@
             ".status.health",
             ".status.healthScoreReason",
             ".status.lastChangeTime",
-            ".spec.leafs.leafNodeSelector",
-            ".spec.spines.spineNodeSelector",
-            ".spec.superSpines.superSpineNodeSelector",
-            ".spec.borderLeafs.borderLeafNodeSelector",
-            ".spec.underlayProtocol.protocol",
+            ".spec.leafs.leafNodeSelectors",
+            ".spec.spines.spineNodeSelectors",
+            ".spec.superSpines.superSpineNodeSelectors",
+            ".spec.borderLeafs.borderLeafNodeSelectors",
+            ".spec.underlayProtocol.protocols",
             ".spec.overlayProtocol.protocol"
           ]
         }
@@ -2677,12 +2811,1725 @@
         ],
         "type": "object"
       },
+      "com.nokia.eda.fabrics.v1.FabricTopology": {
+        "description": "FabricTopology is the Schema for the fabrictopologies API",
+        "properties": {
+          "alarms": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology_alarms"
+          },
+          "apiVersion": {
+            "default": "fabrics.eda.nokia.com/v1",
+            "pattern": "^fabrics\\.eda\\.nokia\\.com/v1$",
+            "type": "string",
+            "x-eda-nokia-com": {
+              "ui-pattern-error": "The apiVersion must be set to fabrics.eda.nokia.com/v1",
+              "ui-visible-if": "false"
+            }
+          },
+          "deviations": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology_deviations"
+          },
+          "kind": {
+            "default": "FabricTopology",
+            "pattern": "^FabricTopology$",
+            "type": "string",
+            "x-eda-nokia-com": {
+              "ui-pattern-error": "The kind must be set to FabricTopology",
+              "ui-visible-if": "false"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology_metadata"
+          },
+          "spec": {
+            "properties": {
+              "checks": {
+                "description": "Configure dry run mode and prompts for topology operations.",
+                "properties": {
+                  "dryRun": {
+                    "default": false,
+                    "description": "Enabling the Dry Run will run the transaction with the calculated changes to the topology resources in the dry run mode and pause the workflow awaiting users confirmation.",
+                    "title": "Dry Run",
+                    "type": "boolean",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 100
+                    }
+                  },
+                  "prompts": {
+                    "description": "Prompts can be configured to request user confirmation before creating, replacing, or deleting topology resources, regardless if Dry Run is enabled or not.\nThis can be configured per operation type (BeforeCreate, BeforeReplace, BeforeDelete).",
+                    "items": {
+                      "enum": [
+                        "BeforeCreate",
+                        "BeforeDelete",
+                        "BeforeReplace"
+                      ],
+                      "type": "string"
+                    },
+                    "title": "Prompt For Confirmation",
+                    "type": "array",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 200
+                    }
+                  }
+                },
+                "title": "Checks",
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 10
+                }
+              },
+              "edgeLinkTemplates": {
+                "description": "Edge link templates used in the topology.",
+                "items": {
+                  "properties": {
+                    "annotations": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Annotations to assign to the TopoLink.",
+                      "title": "Annotations",
+                      "type": "object"
+                    },
+                    "breakouts": {
+                      "description": "Breakouts optionally defines port breakout for edge link members (same semantics as inter-switch link templates).",
+                      "items": {
+                        "properties": {
+                          "local": {
+                            "description": "Local breakout endpoint properties",
+                            "properties": {
+                              "channels": {
+                                "description": "The number of breakout channels to create",
+                                "format": "int32",
+                                "maximum": 8,
+                                "minimum": 1,
+                                "title": "Number of Channels",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 100
+                                }
+                              },
+                              "speed": {
+                                "description": "Speed of each breakout channel",
+                                "enum": [
+                                  "800G",
+                                  "400G",
+                                  "200G",
+                                  "100G",
+                                  "50G",
+                                  "40G",
+                                  "25G",
+                                  "10G",
+                                  "2.5G",
+                                  "1G",
+                                  "100M"
+                                ],
+                                "title": "Speed",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 200
+                                }
+                              }
+                            },
+                            "title": "Local",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 100
+                            }
+                          },
+                          "remote": {
+                            "description": "Remote breakout endpoint properties",
+                            "properties": {
+                              "channels": {
+                                "description": "The number of breakout channels to create",
+                                "format": "int32",
+                                "maximum": 8,
+                                "minimum": 1,
+                                "title": "Number of Channels",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 100
+                                }
+                              },
+                              "speed": {
+                                "description": "Speed of each breakout channel",
+                                "enum": [
+                                  "800G",
+                                  "400G",
+                                  "200G",
+                                  "100G",
+                                  "50G",
+                                  "40G",
+                                  "25G",
+                                  "10G",
+                                  "2.5G",
+                                  "1G",
+                                  "100M"
+                                ],
+                                "title": "Speed",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 200
+                                }
+                              }
+                            },
+                            "title": "Remote",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 200
+                            }
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "title": "Breakouts",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 55
+                      }
+                    },
+                    "encapType": {
+                      "default": "Null",
+                      "description": "Enable or disable VLAN tagging on Interfaces created by the TopoLink.",
+                      "enum": [
+                        "Null",
+                        "Dot1q"
+                      ],
+                      "title": "Encapsulation",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 20
+                      }
+                    },
+                    "interfacesInLAG": {
+                      "description": "Number of interfaces in the edge LAG link.",
+                      "format": "int32",
+                      "maximum": 65535,
+                      "title": "Interfaces in LAG",
+                      "type": "integer",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 50
+                      }
+                    },
+                    "labels": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Labels to assign to the TopoLink.",
+                      "title": "Labels",
+                      "type": "object"
+                    },
+                    "name": {
+                      "description": "topologiesv1.TopoLinkTemplate `json:\",inline\"`\nThe name of the TopoLinkTemplate.",
+                      "title": "Name",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 10
+                      }
+                    },
+                    "nodesInLAG": {
+                      "description": "Number of nodes in the edge link.",
+                      "format": "int32",
+                      "maximum": 65535,
+                      "title": "Nodes in LAG",
+                      "type": "integer",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 40
+                      }
+                    },
+                    "type": {
+                      "default": "Edge",
+                      "description": "Specify the type of edge link.",
+                      "enum": [
+                        "ESLAG",
+                        "Edge",
+                        "LocalLAG"
+                      ],
+                      "title": "Type",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 30
+                      }
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "type"
+                  ],
+                  "type": "object"
+                },
+                "title": "Edge Link Templates",
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 40
+                }
+              },
+              "interSwitchLinkTemplates": {
+                "description": "Inter-switch link templates used in the topology.",
+                "items": {
+                  "description": "ISLTemplate defines a template for inter-switch link groups, extending the upstream\nlink template with optional LocalLAG bundle configuration.\nWhen InterfacesInLAG is greater than zero, each ISL group using this template emits\nLAG bundles with that many member interfaces instead of individual P2P links.",
+                  "properties": {
+                    "annotations": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Annotations to assign to TopoLinks created from this template.",
+                      "title": "Annotations",
+                      "type": "object"
+                    },
+                    "breakouts": {
+                      "description": "Breakouts optionally defines port breakout for link members.",
+                      "items": {
+                        "properties": {
+                          "local": {
+                            "description": "Local breakout endpoint properties",
+                            "properties": {
+                              "channels": {
+                                "description": "The number of breakout channels to create",
+                                "format": "int32",
+                                "maximum": 8,
+                                "minimum": 1,
+                                "title": "Number of Channels",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 100
+                                }
+                              },
+                              "speed": {
+                                "description": "Speed of each breakout channel",
+                                "enum": [
+                                  "800G",
+                                  "400G",
+                                  "200G",
+                                  "100G",
+                                  "50G",
+                                  "40G",
+                                  "25G",
+                                  "10G",
+                                  "2.5G",
+                                  "1G",
+                                  "100M"
+                                ],
+                                "title": "Speed",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 200
+                                }
+                              }
+                            },
+                            "title": "Local",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 100
+                            }
+                          },
+                          "remote": {
+                            "description": "Remote breakout endpoint properties",
+                            "properties": {
+                              "channels": {
+                                "description": "The number of breakout channels to create",
+                                "format": "int32",
+                                "maximum": 8,
+                                "minimum": 1,
+                                "title": "Number of Channels",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 100
+                                }
+                              },
+                              "speed": {
+                                "description": "Speed of each breakout channel",
+                                "enum": [
+                                  "800G",
+                                  "400G",
+                                  "200G",
+                                  "100G",
+                                  "50G",
+                                  "40G",
+                                  "25G",
+                                  "10G",
+                                  "2.5G",
+                                  "1G",
+                                  "100M"
+                                ],
+                                "title": "Speed",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 200
+                                }
+                              }
+                            },
+                            "title": "Remote",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 200
+                            }
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "title": "Breakouts",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 27
+                      }
+                    },
+                    "encapType": {
+                      "default": "Null",
+                      "description": "Enable or disable VLAN tagging on Interfaces created by the TopoLink.",
+                      "enum": [
+                        "Null",
+                        "Dot1q"
+                      ],
+                      "title": "Encapsulation",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 20
+                      }
+                    },
+                    "interfacesInLAG": {
+                      "description": "InterfacesInLAG, when greater than zero, enables LocalLAG mode.\nEach ISL group using this template emits LAG bundles where every bundle\nhas InterfacesInLAG member interfaces between the local and remote node pair.\nInterfacesPerNodePair on the ISL group then controls how many bundles are\ncreated per node pair (default 1).",
+                      "format": "int32",
+                      "maximum": 65535,
+                      "title": "Interfaces in LAG",
+                      "type": "integer",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 30
+                      }
+                    },
+                    "labels": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Labels to assign to TopoLinks created from this template.",
+                      "title": "Labels",
+                      "type": "object"
+                    },
+                    "name": {
+                      "description": "The name of the ISLTemplate.",
+                      "title": "Name",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 10
+                      }
+                    },
+                    "speed": {
+                      "description": "Speed of the link (e.g. 100G).",
+                      "title": "Speed",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 26
+                      }
+                    },
+                    "type": {
+                      "default": "InterSwitch",
+                      "description": "Type of the TopoLink (e.g. interSwitch). Defaults to interSwitch when omitted.",
+                      "title": "Type",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 25
+                      }
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "title": "Inter-Switch Link Templates",
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 30
+                }
+              },
+              "nodeTemplates": {
+                "description": "Node templates used in the topology.",
+                "items": {
+                  "properties": {
+                    "annotations": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Annotations to assign to the TopoNode.",
+                      "title": "Annotations",
+                      "type": "object"
+                    },
+                    "components": {
+                      "description": "List of components within the TopoNode.\nUsed to define the type and location of linecards, fabrics (SFM), media adapter cards (MDA) and control cards (CPM).",
+                      "items": {
+                        "properties": {
+                          "kind": {
+                            "description": "The kind of Component, e.g. lineCard.",
+                            "enum": [
+                              "controlCard",
+                              "lineCard",
+                              "fabric",
+                              "mda",
+                              "connector",
+                              "xiom",
+                              "powerShelf",
+                              "powerModule"
+                            ],
+                            "title": "Kind",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-column-span": 2,
+                              "ui-order-priority": 1500,
+                              "ui-single-line-group": "KindType"
+                            }
+                          },
+                          "slot": {
+                            "description": "The slot this Component resides in, unset for Components that do not have a slot or ID.\ne.g. 1 would denote the linecard slot 1, 1/1 would denote linecard slot 1 mda slot 1.",
+                            "title": "Slot",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-column-span": 2,
+                              "ui-order-priority": 1700
+                            }
+                          },
+                          "type": {
+                            "description": "Denotes the type of hardware being provisioned, e.g. xcm-x20.",
+                            "title": "Type",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-column-span": 2,
+                              "ui-order-priority": 1600,
+                              "ui-single-line-group": "KindType"
+                            }
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "type"
+                        ],
+                        "type": "object"
+                      },
+                      "title": "Components",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 1200
+                      }
+                    },
+                    "labels": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Labels to assign to the TopoNode.",
+                      "title": "Labels",
+                      "type": "object"
+                    },
+                    "license": {
+                      "description": "Reference to a ConfigMap containing a license for the TopoNode. Overrides the license set in the referenced NodeProfile, if present.",
+                      "title": "License",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-column-span": 2,
+                        "ui-order-priority": 1000
+                      }
+                    },
+                    "name": {
+                      "description": "The name of the TopoNodeTemplate.",
+                      "title": "Name",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 50
+                      }
+                    },
+                    "nodeProfile": {
+                      "description": "Reference to a NodeProfile to use with this TopoNode.",
+                      "title": "Node Profile",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-auto-completes": [
+                          {
+                            "condition": "true",
+                            "group": "core.eda.nokia.com",
+                            "resource": "nodeprofiles",
+                            "type": "gvr"
+                          }
+                        ],
+                        "ui-column-span": 2,
+                        "ui-order-priority": 300,
+                        "ui-single-line-group": "NodeProfileProdAddress"
+                      }
+                    },
+                    "platform": {
+                      "description": "Platform type of this TopoNode, e.g. 7220 IXR-D3L.",
+                      "title": "Platform",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-column-span": 2,
+                        "ui-order-priority": 100,
+                        "ui-single-line-group": "PlatformVersion"
+                      }
+                    },
+                    "satelliteNodes": {
+                      "description": "List of satellite nodes to be inherited by nodes using this template.",
+                      "items": {
+                        "properties": {
+                          "components": {
+                            "description": "Components for the satellite node.",
+                            "items": {
+                              "properties": {
+                                "kind": {
+                                  "description": "The kind of Component, e.g. lineCard.",
+                                  "enum": [
+                                    "controlCard",
+                                    "lineCard",
+                                    "fabric",
+                                    "mda",
+                                    "connector",
+                                    "xiom",
+                                    "powerShelf",
+                                    "powerModule"
+                                  ],
+                                  "title": "Kind",
+                                  "type": "string",
+                                  "x-eda-nokia-com": {
+                                    "ui-column-span": 2,
+                                    "ui-order-priority": 1500,
+                                    "ui-single-line-group": "KindType"
+                                  }
+                                },
+                                "slot": {
+                                  "description": "The slot this Component resides in, unset for Components that do not have a slot or ID.\ne.g. 1 would denote the linecard slot 1, 1/1 would denote linecard slot 1 mda slot 1.",
+                                  "title": "Slot",
+                                  "type": "string",
+                                  "x-eda-nokia-com": {
+                                    "ui-column-span": 2,
+                                    "ui-order-priority": 1700
+                                  }
+                                },
+                                "type": {
+                                  "description": "Denotes the type of hardware being provisioned, e.g. xcm-x20.",
+                                  "title": "Type",
+                                  "type": "string",
+                                  "x-eda-nokia-com": {
+                                    "ui-column-span": 2,
+                                    "ui-order-priority": 1600,
+                                    "ui-single-line-group": "KindType"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "type"
+                              ],
+                              "type": "object"
+                            },
+                            "title": "Components",
+                            "type": "array",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 800
+                            }
+                          },
+                          "id": {
+                            "description": "ID of the satellite node.",
+                            "title": "ID",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 100
+                            }
+                          },
+                          "macAddress": {
+                            "description": " MAC Address of the satellite node.",
+                            "title": "MAC Address",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 300
+                            }
+                          },
+                          "platform": {
+                            "description": "Platform of the satellite node.",
+                            "title": "Platform",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 600
+                            }
+                          },
+                          "portTemplate": {
+                            "description": "Port template to be used for the satellite node.",
+                            "title": "Port Template",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 500
+                            }
+                          },
+                          "satelliteProfile": {
+                            "description": "Satellite profile to be used for the satellite node.",
+                            "title": "Satellite Profile",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-auto-completes": [
+                                {
+                                  "condition": "true",
+                                  "group": "core.eda.nokia.com",
+                                  "resource": "satelliteprofiles",
+                                  "type": "gvr"
+                                }
+                              ],
+                              "ui-order-priority": 400
+                            }
+                          },
+                          "type": {
+                            "description": "Type of the satellite node.",
+                            "title": "Type",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 200
+                            }
+                          },
+                          "uplinkInterfaces": {
+                            "description": "Uplink interfaces to be created for the satellite node.",
+                            "items": {
+                              "properties": {
+                                "hostPort": {
+                                  "description": "HostPort interface of the satellite uplink.",
+                                  "title": "Host Port",
+                                  "type": "string",
+                                  "x-eda-nokia-com": {
+                                    "ui-order-priority": 100
+                                  }
+                                },
+                                "satellite": {
+                                  "description": "Satellite interface of the satellite uplink.",
+                                  "title": "Satellite",
+                                  "type": "string",
+                                  "x-eda-nokia-com": {
+                                    "ui-order-priority": 200
+                                  }
+                                }
+                              },
+                              "required": [
+                                "hostPort",
+                                "satellite"
+                              ],
+                              "type": "object"
+                            },
+                            "title": "Uplink Interfaces",
+                            "type": "array",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 700
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type"
+                        ],
+                        "type": "object"
+                      },
+                      "title": "Satellite Nodes",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 1300
+                      }
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "title": "Node Templates",
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 30
+                }
+              },
+              "operation": {
+                "default": "Reconcile",
+                "description": "Operation to be performed on the Topology.\nCreate - creates the topology resources based on the provided specifications.\nReplace - replaces the resources matched by name with the provided specifications.\nReplaceAll - first removes all existing topology resources and then creates new ones based on the provided specifications.\nDelete - deletes the resources matched by name.\nDeleteAll - deletes all topology resources found in the namespace.\nOne of create, replace, replaceAll, reconcile, delete, deleteAll.",
+                "enum": [
+                  "Create",
+                  "Replace",
+                  "ReplaceAll",
+                  "Delete",
+                  "DeleteAll",
+                  "Reconcile"
+                ],
+                "title": "Operation",
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-column-span": 2,
+                  "ui-order-priority": 20
+                }
+              },
+              "podTemplates": {
+                "description": "Pod templates used in the topology.",
+                "items": {
+                  "properties": {
+                    "edgeLinkGroups": {
+                      "description": "Edge link groups to create in the pod.",
+                      "items": {
+                        "properties": {
+                          "annotations": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Annotations to assign to TopoLinks created from this group. Takes precedence over\nannotations from the referenced template.",
+                            "title": "Annotations",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 50
+                            }
+                          },
+                          "count": {
+                            "description": "Number of endpoints to connect to the edge link group.",
+                            "format": "int64",
+                            "title": "Count",
+                            "type": "integer",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 10
+                            }
+                          },
+                          "interfaceName": {
+                            "description": "Interface name pattern for Interface CRs on each link endpoint. When empty, the\ndefault pattern depends on the link shape: plain edge links use\n{{.nodeName}}-ethernet-{{.interfaceIndex}} (one Interface CR per physical port);\nESI-LAG and local-LAG bundles use the counter-based\n{{.podName}}-{{.groupName}}{{if .linkType}}-{{.linkType}}{{end}}-{{.linkIndex}}-{{.side}}\n(every bundle member folds into one shared Interface CR). When set, overrides the\nInterface CR metadata.name (not the physical port string). Evaluated per local endpoint\nwith .podName, .groupName, .linkIndex, .nodeName, .interfaceIndex, .side (\"local\"),\n.linkType (\"eslag\", \"lag\", or empty for plain edge links), .Links, .Members, plus\npod vars. interfaceIndex is the topology interface name with the\nethernet- prefix removed (e.g. ethernet-1-29 → 1-29, ethernet-1-a-3-1 → 1-a-3-1).\n.Links is the raw []TopologyLinkMember endpoint list for the TopoLink being named;\n.Members is the raw []TopologyEndpoint local endpoints (from .Links) that fold into the\nInterface CR currently being named — a single entry for a plain edge link, or one entry\nper bundle member for an ESI-LAG or local-LAG bundle, e.g.\n{{ range .Members }}{{.Node}}{{ end }}.",
+                            "title": "Interface Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 60
+                            }
+                          },
+                          "labels": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Labels to assign to TopoLinks created from this group. Takes precedence over\nlabels from the referenced template.",
+                            "title": "Labels",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 40
+                            }
+                          },
+                          "linkName": {
+                            "description": "Link name pattern for TopoLinks created from this group. When empty, the default\npattern is {{.podName}}-{{.groupName}}{{if .linkType}}-{{.linkType}}{{end}}-{{.linkIndex}}.\nAvailable template variables: .podName, .groupName, .linkIndex, .linkType (\"eslag\" for\nESI-LAG, \"lag\" for local-LAG, or empty for plain edge links), .Links, plus any keys from\nthe pod's vars map.\n.Links is the raw []TopologyLinkMember endpoint list for the TopoLink being named (one\nentry for a plain edge link, one per bundle member for an ESI-LAG or local-LAG bundle),\ne.g. {{ (index .Links 0).Local.Node }}.",
+                            "title": "Link Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 55
+                            }
+                          },
+                          "localNodes": {
+                            "description": "Local nodes to connect to the edge link group.",
+                            "properties": {
+                              "interfaceIndexIncrement": {
+                                "default": 1,
+                                "description": "Stride between consecutive interface allocations in a link group on each\nmatched node. A value of 1 (default) allocates adjacent ports or slots;\n2 leaves every other port free (e.g. start 1-50 with increment 2 and\ncount 4 yields 1-50, 1-52, 1-54, 1-56). Applies to whole-port and\nbreakout allocation; LAG members within one bundle stay contiguous on\nthe same parent port.",
+                                "format": "int32",
+                                "minimum": 1,
+                                "title": "Interface Index Increment",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 30
+                                }
+                              },
+                              "interfaceStartIndex": {
+                                "default": "1",
+                                "description": "Starting index or candidate pool for interfaces allocated on each matched node.\nEvery matched node evaluates the same expression into its own independent\nsequence; pools are not shared across nodes.\n\nPool syntax uses double-brace expressions: {{...}}. Bounded pools include\ndot-dot ranges ({{3..6}}), comma lists ({{a,b}}), and combinations ({{1..4,6,10..12}}).\nMulti-segment expressions expand as a cartesian product with the rightmost segment varying fastest.\n\nOpen-ended syntax {{N..}} (numeric only) means start at N and increment\nforever. A bare positive integer such as \"3\" is equivalent to \"{{3..}}\".\n\nLeft-pinning sharp edge: a finite segment to the left of an open-ended\nsegment never advances (for example, 1-{{a,b}}-{{1..}} uses only a).\nSplit such cases into separate groups or selectors with explicit per-subset\npools.\n\nFinite pools exceeding 100,000 candidates are rejected at parse time.\n\nChannel-form ranges are supported for flat (SR Linux) breakout and LAG\ngroups (for example, 1-{{29..30}}-{{1..4}}); each LAG bundle must fit on\none parent port's channels.",
+                                "title": "Interface Start Index",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 20
+                                }
+                              },
+                              "nodeSelectors": {
+                                "description": "Node selectors to select the nodes to connect to the endpoint.",
+                                "format": "labelselector",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "title": "Node Selectors",
+                                "type": "array",
+                                "x-eda-nokia-com": {
+                                  "ui-auto-completes": [
+                                    {
+                                      "condition": "true",
+                                      "group": "core.eda.nokia.com",
+                                      "kind": "TopoNode",
+                                      "type": "labelselector"
+                                    }
+                                  ],
+                                  "ui-order-priority": 10
+                                }
+                              }
+                            },
+                            "title": "Local Nodes",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 30
+                            }
+                          },
+                          "name": {
+                            "description": "Name of the edge link group.",
+                            "maxLength": 253,
+                            "pattern": "^[a-z0-9]([a-z0-9\\-]*[a-z0-9])?$",
+                            "title": "Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 10
+                            }
+                          },
+                          "template": {
+                            "description": "Template name for the edge link group.",
+                            "title": "Template",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 20
+                            }
+                          }
+                        },
+                        "required": [
+                          "localNodes",
+                          "name",
+                          "template"
+                        ],
+                        "type": "object"
+                      },
+                      "title": "Edge Link Groups",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 40
+                      }
+                    },
+                    "interSwitchLinkGroups": {
+                      "description": "Inter-switch link groups to create in the pod.",
+                      "items": {
+                        "properties": {
+                          "annotations": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Annotations to assign to TopoLinks created from this group. Takes precedence over\nannotations from the referenced template.",
+                            "title": "Annotations",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 70
+                            }
+                          },
+                          "interfaceName": {
+                            "description": "Interface name pattern for Interface CRs on each link endpoint. When empty, the\ndefault pattern depends on the link shape: plain (non-LAG) ISL links use\n{{.nodeName}}-ethernet-{{.interfaceIndex}} (one Interface CR per physical port);\nISL-LAG bundles use the counter-based\n{{.podName}}-{{.groupName}}-{{.linkIndex}}-{{.side}} (every bundle member folds into\none shared Interface CR per side; .linkType is always empty for ISL links). When set,\noverrides the Interface CR metadata.name (not the physical port string). Evaluated per\nendpoint with .podName, .groupName, .linkIndex, .nodeName, .interfaceIndex, .side\n(\"local\" or \"remote\"), .linkType (always empty for ISL links), .Links, .Members, plus\npod vars. interfaceIndex is the topology interface\nname with the ethernet- prefix removed (e.g. ethernet-1-29 → 1-29,\nethernet-1-a-3-1 → 1-a-3-1). .Links is the raw []TopologyLinkMember endpoint list for\nthe TopoLink being named; .Members is the raw []TopologyEndpoint per-side endpoints\n(from .Links) that fold into the Interface CR currently being named — a single entry\nfor a plain ISL link, or one entry per bundle member for an ISL-LAG bundle, e.g.\n{{ range .Members }}{{.Node}}{{ end }}.",
+                            "title": "Interface Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 80
+                            }
+                          },
+                          "interfacesPerNodePair": {
+                            "default": 1,
+                            "description": "Number of interfaces per node pair.",
+                            "format": "int64",
+                            "title": "Number of Interfaces per Node Pair",
+                            "type": "integer",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 30
+                            }
+                          },
+                          "labels": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Labels to assign to TopoLinks created from this group. Takes precedence over\nlabels from the referenced template.",
+                            "title": "Labels",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 60
+                            }
+                          },
+                          "linkName": {
+                            "description": "Link name pattern for TopoLinks created from this group. When empty, the default\npattern is {{.podName}}-{{.groupName}}{{if .linkType}}-{{.linkType}}{{end}}-{{.linkIndex}}.\nAvailable template variables: .podName, .groupName, .linkIndex, .linkType (always empty\nfor ISL links, plain and ISL-LAG), .Links, plus any keys from the pod's vars map. .Links is the raw\n[]TopologyLinkMember endpoint list for the TopoLink being named (one entry for a plain\nISL link, one per bundle member for an ISL-LAG bundle), e.g.\n{{ (index .Links 0).Local.Node }}--{{ (index .Links 0).Remote.Node }}.",
+                            "title": "Link Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 75
+                            }
+                          },
+                          "localNodes": {
+                            "description": "Local nodes to connect to the inter-switch link group.",
+                            "properties": {
+                              "interfaceIndexIncrement": {
+                                "default": 1,
+                                "description": "Stride between consecutive interface allocations in a link group on each\nmatched node. A value of 1 (default) allocates adjacent ports or slots;\n2 leaves every other port free (e.g. start 1-50 with increment 2 and\ncount 4 yields 1-50, 1-52, 1-54, 1-56). Applies to whole-port and\nbreakout allocation; LAG members within one bundle stay contiguous on\nthe same parent port.",
+                                "format": "int32",
+                                "minimum": 1,
+                                "title": "Interface Index Increment",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 30
+                                }
+                              },
+                              "interfaceStartIndex": {
+                                "default": "1",
+                                "description": "Starting index or candidate pool for interfaces allocated on each matched node.\nEvery matched node evaluates the same expression into its own independent\nsequence; pools are not shared across nodes.\n\nPool syntax uses double-brace expressions: {{...}}. Bounded pools include\ndot-dot ranges ({{3..6}}), comma lists ({{a,b}}), and combinations ({{1..4,6,10..12}}).\nMulti-segment expressions expand as a cartesian product with the rightmost segment varying fastest.\n\nOpen-ended syntax {{N..}} (numeric only) means start at N and increment\nforever. A bare positive integer such as \"3\" is equivalent to \"{{3..}}\".\n\nLeft-pinning sharp edge: a finite segment to the left of an open-ended\nsegment never advances (for example, 1-{{a,b}}-{{1..}} uses only a).\nSplit such cases into separate groups or selectors with explicit per-subset\npools.\n\nFinite pools exceeding 100,000 candidates are rejected at parse time.\n\nChannel-form ranges are supported for flat (SR Linux) breakout and LAG\ngroups (for example, 1-{{29..30}}-{{1..4}}); each LAG bundle must fit on\none parent port's channels.",
+                                "title": "Interface Start Index",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 20
+                                }
+                              },
+                              "nodeSelectors": {
+                                "description": "Node selectors to select the nodes to connect to the endpoint.",
+                                "format": "labelselector",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "title": "Node Selectors",
+                                "type": "array",
+                                "x-eda-nokia-com": {
+                                  "ui-auto-completes": [
+                                    {
+                                      "condition": "true",
+                                      "group": "core.eda.nokia.com",
+                                      "kind": "TopoNode",
+                                      "type": "labelselector"
+                                    }
+                                  ],
+                                  "ui-order-priority": 10
+                                }
+                              }
+                            },
+                            "title": "Local Nodes",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 40
+                            }
+                          },
+                          "name": {
+                            "description": "Name of the inter-switch link group.",
+                            "maxLength": 253,
+                            "pattern": "^[a-z0-9]([a-z0-9\\-]*[a-z0-9])?$",
+                            "title": "Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 10
+                            }
+                          },
+                          "remoteNodes": {
+                            "description": "Remote nodes to connect to the inter-switch link group.",
+                            "properties": {
+                              "interfaceIndexIncrement": {
+                                "default": 1,
+                                "description": "Stride between consecutive interface allocations in a link group on each\nmatched node. A value of 1 (default) allocates adjacent ports or slots;\n2 leaves every other port free (e.g. start 1-50 with increment 2 and\ncount 4 yields 1-50, 1-52, 1-54, 1-56). Applies to whole-port and\nbreakout allocation; LAG members within one bundle stay contiguous on\nthe same parent port.",
+                                "format": "int32",
+                                "minimum": 1,
+                                "title": "Interface Index Increment",
+                                "type": "integer",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 30
+                                }
+                              },
+                              "interfaceStartIndex": {
+                                "default": "1",
+                                "description": "Starting index or candidate pool for interfaces allocated on each matched node.\nEvery matched node evaluates the same expression into its own independent\nsequence; pools are not shared across nodes.\n\nPool syntax uses double-brace expressions: {{...}}. Bounded pools include\ndot-dot ranges ({{3..6}}), comma lists ({{a,b}}), and combinations ({{1..4,6,10..12}}).\nMulti-segment expressions expand as a cartesian product with the rightmost segment varying fastest.\n\nOpen-ended syntax {{N..}} (numeric only) means start at N and increment\nforever. A bare positive integer such as \"3\" is equivalent to \"{{3..}}\".\n\nLeft-pinning sharp edge: a finite segment to the left of an open-ended\nsegment never advances (for example, 1-{{a,b}}-{{1..}} uses only a).\nSplit such cases into separate groups or selectors with explicit per-subset\npools.\n\nFinite pools exceeding 100,000 candidates are rejected at parse time.\n\nChannel-form ranges are supported for flat (SR Linux) breakout and LAG\ngroups (for example, 1-{{29..30}}-{{1..4}}); each LAG bundle must fit on\none parent port's channels.",
+                                "title": "Interface Start Index",
+                                "type": "string",
+                                "x-eda-nokia-com": {
+                                  "ui-order-priority": 20
+                                }
+                              },
+                              "nodeSelectors": {
+                                "description": "Node selectors to select the nodes to connect to the endpoint.",
+                                "format": "labelselector",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "title": "Node Selectors",
+                                "type": "array",
+                                "x-eda-nokia-com": {
+                                  "ui-auto-completes": [
+                                    {
+                                      "condition": "true",
+                                      "group": "core.eda.nokia.com",
+                                      "kind": "TopoNode",
+                                      "type": "labelselector"
+                                    }
+                                  ],
+                                  "ui-order-priority": 10
+                                }
+                              }
+                            },
+                            "title": "Remote Nodes",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 50
+                            }
+                          },
+                          "template": {
+                            "description": "Template name for the inter-switch link group.",
+                            "title": "Template",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 20
+                            }
+                          }
+                        },
+                        "required": [
+                          "localNodes",
+                          "name",
+                          "remoteNodes",
+                          "template"
+                        ],
+                        "type": "object"
+                      },
+                      "title": "Inter-Switch Link Groups",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 30
+                      }
+                    },
+                    "name": {
+                      "description": "Name of the pod template.",
+                      "title": "Name",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 10
+                      }
+                    },
+                    "nodeGroups": {
+                      "description": "Node groups to create in the pod.",
+                      "items": {
+                        "properties": {
+                          "annotations": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Annotations to assign to the node group.",
+                            "title": "Annotations",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 60
+                            }
+                          },
+                          "count": {
+                            "description": "Number of nodes in the node group.",
+                            "format": "int64",
+                            "title": "Number of Nodes",
+                            "type": "integer",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 40
+                            }
+                          },
+                          "labels": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Labels to assign to the node group.",
+                            "title": "Labels",
+                            "type": "object",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 50
+                            }
+                          },
+                          "name": {
+                            "description": "Name of the node group.",
+                            "maxLength": 253,
+                            "pattern": "^[a-z0-9]([a-z0-9\\-]*[a-z0-9])?$",
+                            "title": "Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 10
+                            }
+                          },
+                          "nodeName": {
+                            "description": "Node name pattern to be used to generate the node names. default pattern is {{.podName}}-{{.nodeGroupName}}{{ printf \"%02d\" .nodeIndex }}",
+                            "title": "Node Name",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 20
+                            }
+                          },
+                          "nodeTemplate": {
+                            "description": "Template name for the node group.",
+                            "title": "Node Template",
+                            "type": "string",
+                            "x-eda-nokia-com": {
+                              "ui-order-priority": 30
+                            }
+                          }
+                        },
+                        "required": [
+                          "count",
+                          "name",
+                          "nodeTemplate"
+                        ],
+                        "type": "object"
+                      },
+                      "title": "Node Groups",
+                      "type": "array",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 20
+                      }
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "title": "Pod Templates",
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 50
+                }
+              },
+              "pods": {
+                "description": "Pods defining the topology structure.",
+                "items": {
+                  "description": "PodSpec defines a pod instance referencing a pod template.",
+                  "properties": {
+                    "name": {
+                      "description": "Name of the pod.",
+                      "maxLength": 63,
+                      "pattern": "^[a-z0-9]([a-z0-9\\-]*[a-z0-9])?$",
+                      "title": "Pod Name",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 20
+                      }
+                    },
+                    "podTemplate": {
+                      "description": "Template name for the pod.",
+                      "title": "Pod Template",
+                      "type": "string",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 30
+                      }
+                    },
+                    "vars": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Variables defined on the pod instance level as key/value pairs.\nThe variables can be used in the fields that support templating syntax such as node, link and interface names in the pod template.",
+                      "title": "Variables",
+                      "type": "object",
+                      "x-eda-nokia-com": {
+                        "ui-order-priority": 40
+                      }
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "podTemplate"
+                  ],
+                  "type": "object"
+                },
+                "title": "Pods",
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 50
+                }
+              }
+            },
+            "title": "Specification",
+            "type": "object",
+            "x-eda-nokia-com": {
+              "ui-order-priority": 30
+            }
+          },
+          "status": {
+            "properties": {
+              "message": {
+                "description": "Human-readable message providing additional context about the operation result",
+                "title": "Message",
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 200
+                }
+              },
+              "processed": {
+                "description": "Detailed breakdown of resources processed during the operation",
+                "properties": {
+                  "breakouts": {
+                    "description": "Summary of breakout operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Breakouts",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 400
+                    }
+                  },
+                  "interfaces": {
+                    "description": "Summary of interface operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Interfaces",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 300
+                    }
+                  },
+                  "links": {
+                    "description": "Summary of link operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Links",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 200
+                    }
+                  },
+                  "nodes": {
+                    "description": "Summary of node operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Nodes",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 100
+                    }
+                  },
+                  "simLinks": {
+                    "description": "Summary of simulation link operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Sim Links",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 600
+                    }
+                  },
+                  "simNodes": {
+                    "description": "Summary of simulation node operations",
+                    "properties": {
+                      "created": {
+                        "description": "Number of resources created",
+                        "format": "int64",
+                        "title": "Created",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 100
+                        }
+                      },
+                      "deleted": {
+                        "description": "Number of resources deleted",
+                        "format": "int64",
+                        "title": "Deleted",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 300
+                        }
+                      },
+                      "updated": {
+                        "description": "Number of resources updated",
+                        "format": "int64",
+                        "title": "Updated",
+                        "type": "integer",
+                        "x-eda-nokia-com": {
+                          "ui-order-priority": 200
+                        }
+                      }
+                    },
+                    "title": "Sim Nodes",
+                    "type": "object",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 500
+                    }
+                  },
+                  "totalDuration": {
+                    "description": "Total duration of the topology operation",
+                    "title": "Total Duration",
+                    "type": "string",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 800
+                    }
+                  },
+                  "totalResources": {
+                    "description": "Total number of resources processed across all types",
+                    "format": "int64",
+                    "title": "Total Resources",
+                    "type": "integer",
+                    "x-eda-nokia-com": {
+                      "ui-order-priority": 700
+                    }
+                  }
+                },
+                "title": "Processed Resources",
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 300
+                }
+              },
+              "result": {
+                "description": "Overall result of the topology operation",
+                "enum": [
+                  "Success",
+                  "Failed"
+                ],
+                "title": "Result",
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 100
+                }
+              }
+            },
+            "readOnly": true,
+            "required": [
+              "result"
+            ],
+            "title": "Status",
+            "type": "object",
+            "x-eda-nokia-com": {
+              "ui-order-priority": 20
+            }
+          }
+        },
+        "required": [
+          "apiVersion",
+          "kind",
+          "metadata",
+          "spec"
+        ],
+        "type": "object"
+      },
+      "com.nokia.eda.fabrics.v1.FabricTopologyList": {
+        "description": "FabricTopologyList is a list of fabrictopologies",
+        "properties": {
+          "apiVersion": {
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+            },
+            "type": "array"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "apiVersion",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "com.nokia.eda.fabrics.v1.FabricTopology_alarms": {
+        "properties": {
+          "critical": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.critical"
+              },
+              "ui-title": "Critical",
+              "ui-title-key": "alarm_severities.critical"
+            }
+          },
+          "major": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.major"
+              },
+              "ui-title": "Major",
+              "ui-title-key": "alarm_severities.major"
+            }
+          },
+          "minor": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.minor"
+              },
+              "ui-title": "minor",
+              "ui-title-key": "alarm_severities.minor"
+            }
+          },
+          "warning": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.warning"
+              },
+              "ui-title": "Warning",
+              "ui-title-key": "alarm_severities.warning"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "alarms"
+          },
+          "ui-order-priority": 40,
+          "ui-title": "Alarms",
+          "ui-title-key": "alarms"
+        }
+      },
+      "com.nokia.eda.fabrics.v1.FabricTopology_deviations": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "count_column"
+              },
+              "ui-title": "Count",
+              "ui-title-key": "count_column"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "deviations"
+          },
+          "ui-order-priority": 50,
+          "ui-title": "Deviations",
+          "ui-title-key": "deviations"
+        }
+      },
+      "com.nokia.eda.fabrics.v1.FabricTopology_metadata": {
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "annotations"
+              },
+              "ui-order-priority": 40,
+              "ui-title": "Annotations",
+              "ui-title-key": "annotations"
+            }
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "labels"
+              },
+              "ui-auto-completes": [
+                {
+                  "condition": "true",
+                  "group": "fabrics.eda.nokia.com",
+                  "kind": "FabricTopology",
+                  "type": "label",
+                  "version": "v1"
+                }
+              ],
+              "ui-order-priority": 30,
+              "ui-title": "Labels",
+              "ui-title-key": "labels"
+            }
+          },
+          "name": {
+            "maxLength": 253,
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            "type": "string",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "name"
+              },
+              "immutable": true,
+              "key": {
+                "index": 2,
+                "is-mirror": true,
+                "is-name": true
+              },
+              "ui-order-priority": 10,
+              "ui-pattern-error": "A valid name is made up of one or more components where each component is separated by period characters.  Each component must start and end with a lower case alphanumeric character and the body of the component is made up of zero or more lower case alphanumeric and hyphen characters.",
+              "ui-title": "Name",
+              "ui-title-key": "name"
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "namespace"
+              },
+              "immutable": true,
+              "key": {
+                "index": 1,
+                "is-mirror": true,
+                "is-namespace": true
+              },
+              "ui-order-priority": 20,
+              "ui-title": "Namespace",
+              "ui-title-key": "namespace"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "namespace"
+        ],
+        "type": "object",
+        "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "metadata"
+          },
+          "ui-order-priority": 10,
+          "ui-title": "Metadata",
+          "ui-title-key": "metadata"
+        }
+      },
       "com.nokia.eda.fabrics.v1.Fabric_DeletedResourceEntry": {
         "properties": {
           "commitTime": {
             "format": "date-time",
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "commitTime"
+              },
               "ui-order-priority": 50,
               "ui-title": "Commit Time",
               "ui-title-key": "commitTime"
@@ -2691,6 +4538,10 @@
           "hash": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "commitHash"
+              },
               "ui-order-priority": 40,
               "ui-title": "Commit Hash",
               "ui-title-key": "commitHash"
@@ -2699,6 +4550,14 @@
           "name": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "name"
+              },
+              "key": {
+                "index": 2,
+                "is-name": true
+              },
               "ui-order-priority": 10,
               "ui-title": "Name",
               "ui-title-key": "name"
@@ -2707,6 +4566,14 @@
           "namespace": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "namespace"
+              },
+              "key": {
+                "index": 1,
+                "is-namespace": true
+              },
               "ui-order-priority": 20,
               "ui-title": "Namespace",
               "ui-title-key": "namespace"
@@ -2716,6 +4583,10 @@
             "format": "uint64",
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "transactionId"
+              },
               "ui-order-priority": 30,
               "ui-title": "Transaction ID",
               "ui-title-key": "transactionId"
@@ -2737,6 +4608,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.critical"
+              },
               "ui-title": "Critical",
               "ui-title-key": "alarm_severities.critical"
             }
@@ -2746,6 +4620,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.major"
+              },
               "ui-title": "Major",
               "ui-title-key": "alarm_severities.major"
             }
@@ -2755,6 +4632,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.minor"
+              },
               "ui-title": "minor",
               "ui-title-key": "alarm_severities.minor"
             }
@@ -2764,6 +4644,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.warning"
+              },
               "ui-title": "Warning",
               "ui-title-key": "alarm_severities.warning"
             }
@@ -2772,6 +4655,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "alarms"
+          },
           "ui-order-priority": 40,
           "ui-title": "Alarms",
           "ui-title-key": "alarms"
@@ -2784,6 +4671,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "count_column"
+              },
               "ui-title": "Count",
               "ui-title-key": "count_column"
             }
@@ -2792,6 +4682,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "deviations"
+          },
           "ui-order-priority": 50,
           "ui-title": "Deviations",
           "ui-title-key": "deviations"
@@ -2805,6 +4699,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "annotations"
+              },
               "ui-order-priority": 40,
               "ui-title": "Annotations",
               "ui-title-key": "annotations"
@@ -2816,6 +4713,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "labels"
+              },
               "ui-auto-completes": [
                 {
                   "condition": "true",
@@ -2835,7 +4735,15 @@
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "name"
+              },
               "immutable": true,
+              "key": {
+                "index": 2,
+                "is-mirror": true,
+                "is-name": true
+              },
               "ui-order-priority": 10,
               "ui-pattern-error": "A valid name is made up of one or more components where each component is separated by period characters.  Each component must start and end with a lower case alphanumeric character and the body of the component is made up of zero or more lower case alphanumeric and hyphen characters.",
               "ui-title": "Name",
@@ -2845,7 +4753,15 @@
           "namespace": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "namespace"
+              },
               "immutable": true,
+              "key": {
+                "index": 1,
+                "is-mirror": true,
+                "is-namespace": true
+              },
               "ui-order-priority": 20,
               "ui-title": "Namespace",
               "ui-title-key": "namespace"
@@ -2858,6 +4774,10 @@
         ],
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "metadata"
+          },
           "ui-order-priority": 10,
           "ui-title": "Metadata",
           "ui-title-key": "metadata"
@@ -2902,6 +4822,7 @@
                   "desiredMinTransmitIntMs": {
                     "default": 1000,
                     "description": "The minimum interval in milliseconds between transmission of BFD control packets.",
+                    "format": "int32",
                     "maximum": 100000,
                     "minimum": 10,
                     "title": "Transmit Interval",
@@ -2917,6 +4838,7 @@
                   "detectionMultiplier": {
                     "default": 3,
                     "description": "The number of packets that must be missed to declare this session as down.",
+                    "format": "int32",
                     "maximum": 20,
                     "minimum": 3,
                     "title": "Multiplier",
@@ -2937,12 +4859,27 @@
                     "x-eda-nokia-com": {
                       "ui-category": "BFD",
                       "ui-column-span": 1,
-                      "ui-order-priority": 300
+                      "ui-order-priority": 300,
+                      "ui-render": [
+                        {
+                          "color": "kpi_info",
+                          "condition": "field===true",
+                          "icon": "ToggleOn",
+                          "text": "True"
+                        },
+                        {
+                          "color": "kpi_disabled",
+                          "condition": "field===false",
+                          "icon": "ToggleOff",
+                          "text": "False"
+                        }
+                      ]
                     }
                   },
                   "requiredMinEchoReceiveIntMs": {
                     "default": 1000,
                     "description": "The minimum interval between echo packets the local node can receive.",
+                    "format": "int32",
                     "maximum": 100000,
                     "minimum": 0,
                     "title": "Minimum Echo Receive Interval",
@@ -2958,6 +4895,7 @@
                   "requiredMinReceiveIntMs": {
                     "default": 1000,
                     "description": "The minimum interval in milliseconds between received BFD control packets that this system should support.",
+                    "format": "int32",
                     "maximum": 100000,
                     "minimum": 10,
                     "title": "Receive Interval",
@@ -2972,6 +4910,7 @@
                   },
                   "ttl": {
                     "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
+                    "format": "int32",
                     "maximum": 255,
                     "minimum": 2,
                     "title": "IP TTL/Hop Limit",
@@ -3018,7 +4957,23 @@
                     "default": false,
                     "description": "Enable or disable BGP peering between the two endpoints of the ISL. [default=false]",
                     "title": "Enabled",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "x-eda-nokia-com": {
+                      "ui-render": [
+                        {
+                          "color": "kpi_info",
+                          "condition": "field===true",
+                          "icon": "ToggleOn",
+                          "text": "True"
+                        },
+                        {
+                          "color": "kpi_disabled",
+                          "condition": "field===false",
+                          "icon": "ToggleOff",
+                          "text": "False"
+                        }
+                      ]
+                    }
                   },
                   "exportPolicies": {
                     "description": "Reference to a RoutingPolicy to use when evaluating route exports from the DefaultRouter.",
@@ -3075,16 +5030,14 @@
                   },
                   "localInterfaceAS": {
                     "description": "The Autonomous System to configure on the Local Interface.",
-                    "format": "int32",
-                    "maximum": 4294967295,
+                    "format": "int64",
                     "minimum": 0,
                     "title": "Local Interface AS",
                     "type": "integer"
                   },
                   "remoteInterfaceAS": {
                     "description": "The Autonomous System to configure on the Remote Interface.",
-                    "format": "int32",
-                    "maximum": 4294967295,
+                    "format": "int64",
                     "minimum": 0,
                     "title": "Remote Interface AS",
                     "type": "integer"
@@ -3103,6 +5056,7 @@
               },
               "ipMTU": {
                 "description": "Sets the IP MTU for the local and remote Interfaces",
+                "format": "int32",
                 "maximum": 9486,
                 "minimum": 1280,
                 "title": "IP MTU",
@@ -3110,6 +5064,87 @@
                 "x-eda-nokia-com": {
                   "ui-column-span": 2
                 }
+              },
+              "isis": {
+                "description": "Enable or disable IS-IS on the ISL.",
+                "properties": {
+                  "addressFamilies": {
+                    "description": "Address families to enable. Uses a single-topology (native) configuration mode.",
+                    "items": {
+                      "enum": [
+                        "IPv4",
+                        "IPv6"
+                      ],
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "title": "Address Families",
+                    "type": "array",
+                    "x-eda-nokia-com": {
+                      "ui-column-span": 2,
+                      "ui-order-priority": 2000
+                    }
+                  },
+                  "enabled": {
+                    "description": "Enable or disable IS-IS between the two endpoints of the ISL.",
+                    "title": "Enabled",
+                    "type": "boolean",
+                    "x-eda-nokia-com": {
+                      "ui-render": [
+                        {
+                          "color": "kpi_info",
+                          "condition": "field===true",
+                          "icon": "ToggleOn",
+                          "text": "True"
+                        },
+                        {
+                          "color": "kpi_disabled",
+                          "condition": "field===false",
+                          "icon": "ToggleOff",
+                          "text": "False"
+                        }
+                      ]
+                    }
+                  },
+                  "localInstance": {
+                    "description": "Reference to a DefaultISISInstance on the local interface.",
+                    "title": "Local Instance",
+                    "type": "string",
+                    "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "protocols.eda.nokia.com",
+                          "resource": "defaultisisinstances",
+                          "type": "gvr"
+                        }
+                      ],
+                      "ui-column-span": 2
+                    }
+                  },
+                  "remoteInstance": {
+                    "description": "Reference to a IPV4 DefaultISISInstance on the remote interface",
+                    "title": "Remote Instance",
+                    "type": "string",
+                    "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "protocols.eda.nokia.com",
+                          "resource": "defaultisisinstances",
+                          "type": "gvr"
+                        }
+                      ],
+                      "ui-column-span": 2
+                    }
+                  }
+                },
+                "required": [
+                  "addressFamilies",
+                  "enabled"
+                ],
+                "title": "IS-IS",
+                "type": "object"
               },
               "localDefaultRouter": {
                 "description": "Reference to the DefaultRouter associated with the local Interface in which the ISL will be provisioned.",
@@ -3147,11 +5182,36 @@
                   "enabled": {
                     "description": "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
                     "title": "Enabled",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "x-eda-nokia-com": {
+                      "ui-render": [
+                        {
+                          "color": "kpi_info",
+                          "condition": "field===true",
+                          "icon": "ToggleOn",
+                          "text": "True"
+                        },
+                        {
+                          "color": "kpi_disabled",
+                          "condition": "field===false",
+                          "icon": "ToggleOff",
+                          "text": "False"
+                        }
+                      ]
+                    }
                   },
                   "ospfv2": {
                     "description": "OSPFv2 Parameters.",
                     "properties": {
+                      "keychain": {
+                        "description": "Keychain to be used for authentication",
+                        "title": "Keychain",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-column-span": 2,
+                          "ui-order-priority": 1500
+                        }
+                      },
                       "localIPv4Area": {
                         "description": "Reference to a IPV4 DefaultOSPFArea on the local interface.",
                         "title": "Local IPV4 Area",
@@ -3465,6 +5525,7 @@
               },
               "vlanID": {
                 "description": "Single VLAN tag value between 1-4094.",
+                "format": "int32",
                 "maximum": 4094,
                 "minimum": 1,
                 "title": "VLAN ID",
@@ -3488,6 +5549,8 @@
             "properties": {
               "health": {
                 "description": "Indicates the health score of the ISL",
+                "format": "int32",
+                "maximum": 100,
                 "title": "Health",
                 "type": "integer",
                 "x-eda-nokia-com": {
@@ -3556,6 +5619,28 @@
                 "x-eda-nokia-com": {
                   "ui-column-span": 2,
                   "ui-order-priority": 100,
+                  "ui-render": [
+                    {
+                      "color": "kpi_success",
+                      "condition": "field===\"Up\"",
+                      "icon": "ArrowUpCircle"
+                    },
+                    {
+                      "color": "kpi_major",
+                      "condition": "field===\"Degraded\"",
+                      "icon": "AlarmCircle"
+                    },
+                    {
+                      "color": "kpi_critical",
+                      "condition": "field===\"Down\"",
+                      "icon": "ArrowDownCircle"
+                    },
+                    {
+                      "color": "kpi_warning",
+                      "condition": "field===\"Unknown\"",
+                      "icon": "RemoveCircle"
+                    }
+                  ],
                   "ui-single-line-group": "Health"
                 }
               },
@@ -3657,6 +5742,10 @@
             "format": "date-time",
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "commitTime"
+              },
               "ui-order-priority": 50,
               "ui-title": "Commit Time",
               "ui-title-key": "commitTime"
@@ -3665,6 +5754,10 @@
           "hash": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "commitHash"
+              },
               "ui-order-priority": 40,
               "ui-title": "Commit Hash",
               "ui-title-key": "commitHash"
@@ -3673,6 +5766,14 @@
           "name": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "name"
+              },
+              "key": {
+                "index": 2,
+                "is-name": true
+              },
               "ui-order-priority": 10,
               "ui-title": "Name",
               "ui-title-key": "name"
@@ -3681,6 +5782,14 @@
           "namespace": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "namespace"
+              },
+              "key": {
+                "index": 1,
+                "is-namespace": true
+              },
               "ui-order-priority": 20,
               "ui-title": "Namespace",
               "ui-title-key": "namespace"
@@ -3690,6 +5799,10 @@
             "format": "uint64",
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "group": "core.eda.nokia.com",
+                "title": "transactionId"
+              },
               "ui-order-priority": 30,
               "ui-title": "Transaction ID",
               "ui-title-key": "transactionId"
@@ -3711,6 +5824,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.critical"
+              },
               "ui-title": "Critical",
               "ui-title-key": "alarm_severities.critical"
             }
@@ -3720,6 +5836,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.major"
+              },
               "ui-title": "Major",
               "ui-title-key": "alarm_severities.major"
             }
@@ -3729,6 +5848,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.minor"
+              },
               "ui-title": "minor",
               "ui-title-key": "alarm_severities.minor"
             }
@@ -3738,6 +5860,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.warning"
+              },
               "ui-title": "Warning",
               "ui-title-key": "alarm_severities.warning"
             }
@@ -3746,6 +5871,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "alarms"
+          },
           "ui-order-priority": 40,
           "ui-title": "Alarms",
           "ui-title-key": "alarms"
@@ -3758,6 +5887,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "count_column"
+              },
               "ui-title": "Count",
               "ui-title-key": "count_column"
             }
@@ -3766,6 +5898,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "deviations"
+          },
           "ui-order-priority": 50,
           "ui-title": "Deviations",
           "ui-title-key": "deviations"
@@ -3779,6 +5915,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "annotations"
+              },
               "ui-order-priority": 40,
               "ui-title": "Annotations",
               "ui-title-key": "annotations"
@@ -3790,6 +5929,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "labels"
+              },
               "ui-auto-completes": [
                 {
                   "condition": "true",
@@ -3809,7 +5951,15 @@
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "name"
+              },
               "immutable": true,
+              "key": {
+                "index": 2,
+                "is-mirror": true,
+                "is-name": true
+              },
               "ui-order-priority": 10,
               "ui-pattern-error": "A valid name is made up of one or more components where each component is separated by period characters.  Each component must start and end with a lower case alphanumeric character and the body of the component is made up of zero or more lower case alphanumeric and hyphen characters.",
               "ui-title": "Name",
@@ -3819,7 +5969,15 @@
           "namespace": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "namespace"
+              },
               "immutable": true,
+              "key": {
+                "index": 1,
+                "is-mirror": true,
+                "is-namespace": true
+              },
               "ui-order-priority": 20,
               "ui-title": "Namespace",
               "ui-title-key": "namespace"
@@ -3832,6 +5990,10 @@
         ],
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "metadata"
+          },
           "ui-order-priority": 10,
           "ui-title": "Metadata",
           "ui-title-key": "metadata"
@@ -3888,6 +6050,7 @@
               "count": {
                 "default": 1,
                 "description": "Count is the number of pings to send.",
+                "format": "int64",
                 "title": "Count",
                 "type": "integer"
               },
@@ -3932,6 +6095,7 @@
               "timeoutSeconds": {
                 "default": 5,
                 "description": "TimeoutSeconds is the timeout for the ping in seconds.",
+                "format": "int64",
                 "title": "Timeout Seconds",
                 "type": "integer"
               }
@@ -3987,6 +6151,7 @@
                         },
                         "received": {
                           "description": "Number of pings received.",
+                          "format": "int64",
                           "title": "Received",
                           "type": "integer",
                           "x-eda-nokia-com": {
@@ -3997,6 +6162,7 @@
                         },
                         "sent": {
                           "description": "Number of pings sent.",
+                          "format": "int64",
                           "title": "Sent",
                           "type": "integer",
                           "x-eda-nokia-com": {
@@ -4072,13 +6238,19 @@
                 "type": "array"
               },
               "result": {
-                "description": "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.",
+                "description": "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.\n- \"Degraded\": The result for this run is failure when compared with a previous Success or PartialSuccess run.",
                 "enum": [
                   "Success",
                   "Failed",
-                  "PartialSuccess"
+                  "PartialSuccess",
+                  "Degraded"
                 ],
                 "title": "Result",
+                "type": "string"
+              },
+              "summary": {
+                "description": "Summary is the result summary of the ping operation.",
+                "title": "Summary",
                 "type": "string"
               }
             },
@@ -4127,6 +6299,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.critical"
+              },
               "ui-title": "Critical",
               "ui-title-key": "alarm_severities.critical"
             }
@@ -4136,6 +6311,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.major"
+              },
               "ui-title": "Major",
               "ui-title-key": "alarm_severities.major"
             }
@@ -4145,6 +6323,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.minor"
+              },
               "ui-title": "minor",
               "ui-title-key": "alarm_severities.minor"
             }
@@ -4154,6 +6335,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "alarm_severities.warning"
+              },
               "ui-title": "Warning",
               "ui-title-key": "alarm_severities.warning"
             }
@@ -4162,6 +6346,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "alarms"
+          },
           "ui-order-priority": 40,
           "ui-title": "Alarms",
           "ui-title-key": "alarms"
@@ -4174,6 +6362,9 @@
             "readOnly": true,
             "type": "integer",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "count_column"
+              },
               "ui-title": "Count",
               "ui-title-key": "count_column"
             }
@@ -4182,6 +6373,10 @@
         "readOnly": true,
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "deviations"
+          },
           "ui-order-priority": 50,
           "ui-title": "Deviations",
           "ui-title-key": "deviations"
@@ -4195,6 +6390,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "annotations"
+              },
               "ui-order-priority": 40,
               "ui-title": "Annotations",
               "ui-title-key": "annotations"
@@ -4206,6 +6404,9 @@
             },
             "type": "object",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "labels"
+              },
               "ui-auto-completes": [
                 {
                   "condition": "true",
@@ -4225,7 +6426,15 @@
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "name"
+              },
               "immutable": true,
+              "key": {
+                "index": 2,
+                "is-mirror": true,
+                "is-name": true
+              },
               "ui-order-priority": 10,
               "ui-pattern-error": "A valid name is made up of one or more components where each component is separated by period characters.  Each component must start and end with a lower case alphanumeric character and the body of the component is made up of zero or more lower case alphanumeric and hyphen characters.",
               "ui-title": "Name",
@@ -4235,7 +6444,15 @@
           "namespace": {
             "type": "string",
             "x-eda-nokia-com": {
+              "i18n-keys": {
+                "title": "namespace"
+              },
               "immutable": true,
+              "key": {
+                "index": 1,
+                "is-mirror": true,
+                "is-namespace": true
+              },
               "ui-order-priority": 20,
               "ui-title": "Namespace",
               "ui-title-key": "namespace"
@@ -4248,6 +6465,10 @@
         ],
         "type": "object",
         "x-eda-nokia-com": {
+          "i18n-keys": {
+            "group": "core.eda.nokia.com",
+            "title": "metadata"
+          },
           "ui-order-priority": 10,
           "ui-title": "Metadata",
           "ui-title-key": "metadata"
@@ -4607,6 +6828,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "description": "the namespace scope from which to perform the delete",
             "in": "path",
             "name": "namespace",
@@ -4770,6 +7000,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -4905,6 +7144,15 @@
             "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
             "in": "query",
             "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
             "schema": {
               "default": false,
               "type": "boolean"
@@ -5065,6 +7313,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -5143,6 +7400,15 @@
             "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
             "in": "query",
             "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
             "schema": {
               "default": false,
               "type": "boolean"
@@ -5488,6 +7754,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "description": "the namespace scope from which to perform the delete",
             "in": "path",
             "name": "namespace",
@@ -5651,6 +7926,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -5786,6 +8070,15 @@
             "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
             "in": "query",
             "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
             "schema": {
               "default": false,
               "type": "boolean"
@@ -5946,6 +8239,15 @@
             }
           },
           {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -6024,6 +8326,15 @@
             "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
             "in": "query",
             "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "If true, pipelines will not be run for the resulting transaction",
+            "in": "query",
+            "name": "skipPipeline",
             "schema": {
               "default": false,
               "type": "boolean"
@@ -6325,6 +8636,93 @@
         ]
       }
     },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/fabrictopologies": {
+      "get": {
+        "operationId": "wfListFabricsEdaNokiaComV1Fabrictopologies",
+        "parameters": [
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "a comma-separated list of resource fields to fetch/return.  If unspecified, all fields are fetched.  If empty, only key-fields are fetched.",
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "an EQL \"where\" expression that will be used to filter the set of resources returned.",
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A label selector string to filter the results based on resource labels. If specified multiple times, the union of resources which satisfy a label-selector will be returned.",
+            "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
+            "name": "label-selector",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopologyList"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopologyList"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "List all FabricTopology instances.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
     "/workflows/v1/fabrics.eda.nokia.com/v1/islpings": {
       "get": {
         "operationId": "wfListFabricsEdaNokiaComV1Islpings",
@@ -6407,6 +8805,624 @@
           }
         },
         "summary": "List all IslPing instances.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies": {
+      "get": {
+        "operationId": "wfListFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "a comma-separated list of resource fields to fetch/return.  If unspecified, all fields are fetched.  If empty, only key-fields are fetched.",
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "an EQL \"where\" expression that will be used to filter the set of resources returned.",
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A label selector string to filter the results based on resource labels. If specified multiple times, the union of resources which satisfy a label-selector will be returned.",
+            "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
+            "name": "label-selector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopologyList"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopologyList"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "List all FabricTopology instances in this namespace.",
+        "tags": [
+          "workflows"
+        ]
+      },
+      "post": {
+        "description": "create a FabricTopology",
+        "operationId": "wfCreateFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}": {
+      "delete": {
+        "operationId": "wfDeleteFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "no data is returned for this response type."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Delete a FabricTopology workflow.",
+        "tags": [
+          "workflows"
+        ]
+      },
+      "get": {
+        "operationId": "wfReadFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1.FabricTopology"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Read the specified FabricTopology.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_artifacts": {
+      "get": {
+        "operationId": "wfListArtifactsFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "The response for a successful list artifacts request."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Read list of artifacts generated by a FabricTopology workflow.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_artifacts/{artifact}": {
+      "get": {
+        "operationId": "wfReadArtifactFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "name of the artifact to download",
+            "in": "path",
+            "name": "artifact",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The binary content of the requested artifact."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Read artifact generated by a FabricTopology workflow.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_input": {
+      "get": {
+        "operationId": "wfListInputFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowGetInputsRespElem"
+                  },
+                  "type": "array"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowGetInputsRespElem"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "List containing specifications for this flow \u0026 subflow's requested input."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Get inputs requested by the FabricTopology.",
+        "tags": [
+          "workflows"
+        ]
+      },
+      "put": {
+        "operationId": "wfSubmitInputFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowInputData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Submit input requested by the FabricTopology.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_logs": {
+      "get": {
+        "operationId": "wfReadLogsFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The response for a successful GET logs request."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Read logs output by the FabricTopology.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_terminate": {
+      "put": {
+        "operationId": "wfTerminateFabricsEdaNokiaComV1NamespaceFabrictopologies",
+        "parameters": [
+          {
+            "description": "name of the FabricTopology",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "no data is returned for this response type."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Terminate a FabricTopology workflow.",
         "tags": [
           "workflows"
         ]

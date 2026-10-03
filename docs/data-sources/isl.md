@@ -23,7 +23,6 @@ description: |-
 ### Optional
 
 - `hash` (String) resource content will be returned as it was at the time of this git hash
-- `spec` (Attributes) The ISL enables the configuration and management of direct links between Nodes. This resource allows for specifying IPv4 and IPv6 allocation pools, enabling BFD for fast failure detection, and configuring VLAN IDs for the ISL. It also supports BGP peering between the endpoints, with options for setting autonomous systems, AFI/SAFI configurations, and import/export routing policies. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -32,101 +31,8 @@ description: |-
 - `deviations` (Attributes) (see [below for nested schema](#nestedatt--deviations))
 - `kind` (String)
 - `metadata` (Attributes) (see [below for nested schema](#nestedatt--metadata))
+- `spec` (Attributes) The ISL enables the configuration and management of direct links between Nodes. This resource allows for specifying IPv4 and IPv6 allocation pools, enabling BFD for fast failure detection, and configuring VLAN IDs for the ISL. It also supports BGP peering between the endpoints, with options for setting autonomous systems, AFI/SAFI configurations, and import/export routing policies. (see [below for nested schema](#nestedatt--spec))
 - `status` (Attributes) ISLStatus defines the observed state of ISL (see [below for nested schema](#nestedatt--status))
-
-<a id="nestedatt--spec"></a>
-### Nested Schema for `spec`
-
-Optional:
-
-- `bfd` (Attributes) Enable or disable BFD on the ISL. [default=false] (see [below for nested schema](#nestedatt--spec--bfd))
-- `bgp` (Attributes) (see [below for nested schema](#nestedatt--spec--bgp))
-- `ip_mtu` (Number) Sets the IP MTU for the local and remote Interfaces
-- `local_default_router` (String) Reference to the DefaultRouter associated with the local Interface in which the ISL will be provisioned.
-- `local_interface` (String) Reference to an Interface.
-- `ospf` (Attributes) Enable or disable OSPF on the ISL. (see [below for nested schema](#nestedatt--spec--ospf))
-- `pool_ipv4` (String) Reference to an IPv4 allocation pool to use for ISL subnet allocations.
-- `pool_ipv6` (String) Reference to an IPv6 allocation pool to use for ISL subnet allocations.
-- `qos` (Attributes) (see [below for nested schema](#nestedatt--spec--qos))
-- `remote_default_router` (String) Reference to the DefaultRouter associated with the remote Interface in which the ISL will be provisioned.
-- `remote_interface` (String) Reference to an Interface.
-- `unnumbered` (String) Enables the use of unnumbered interfaces on the ISL. For IPv6, no IP address are configured on the sub-interface and only the link local address will be used. If any allocation pool is specified for IPv6 that will take precedence and IPs will be assigned to the interfaces.  When using eBGP for an underlay protocol, the DefaultInterfaces which are a part of the ISL will be added to the BGP dynamic neighbor list.
-- `vlan_id` (Number) Single VLAN tag value between 1-4094.
-
-<a id="nestedatt--spec--bfd"></a>
-### Nested Schema for `spec.bfd`
-
-Optional:
-
-- `desired_min_transmit_int_ms` (Number) The minimum interval in milliseconds between transmission of BFD control packets.
-- `detection_multiplier` (Number) The number of packets that must be missed to declare this session as down.
-- `enabled` (Boolean) Enables Biforward Detection.
-- `required_min_echo_receive_int_ms` (Number) The minimum interval between echo packets the local node can receive.
-- `required_min_receive_int_ms` (Number) The minimum interval in milliseconds between received BFD control packets that this system should support.
-- `ttl` (Number) Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.
-
-
-<a id="nestedatt--spec--bgp"></a>
-### Nested Schema for `spec.bgp`
-
-Optional:
-
-- `afi_safis` (List of String) Which AFI and SAFI to advertise on the BGP peering session. Options: ipv4unicast, ipv6unicast, l2vpnevpn
-- `bgp_group` (String) Reference to a DefaultBgpGroup.
-- `enabled` (Boolean) Enable or disable BGP peering between the two endpoints of the ISL. [default=false]
-- `export_policies` (List of String) Reference to a RoutingPolicy to use when evaluating route exports from the DefaultRouter.
-- `import_policies` (List of String) Reference to a RoutingPolicy to use when evaluating route imports into the DefaultRouter.
-- `keychain` (String) Keychain to be used for authentication
-- `local_interface_as` (Number) The Autonomous System to configure on the Local Interface.
-- `remote_interface_as` (Number) The Autonomous System to configure on the Remote Interface.
-
-
-<a id="nestedatt--spec--ospf"></a>
-### Nested Schema for `spec.ospf`
-
-Optional:
-
-- `enabled` (Boolean) Enable or disable OSPF between the two endpoints of the ISL.
-kubebuilder:validation:Boolean
-- `ospfv2` (Attributes) OSPFv2 Parameters. (see [below for nested schema](#nestedatt--spec--ospf--ospfv2))
-- `ospfv3` (Attributes) OSPFv3 Parameters. (see [below for nested schema](#nestedatt--spec--ospf--ospfv3))
-
-<a id="nestedatt--spec--ospf--ospfv2"></a>
-### Nested Schema for `spec.ospf.ospfv2`
-
-Optional:
-
-- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
-- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface.
-- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
-- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
-
-
-<a id="nestedatt--spec--ospf--ospfv3"></a>
-### Nested Schema for `spec.ospf.ospfv3`
-
-Optional:
-
-- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
-- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface
-- `local_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the local interface.
-- `local_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the local interface.
-- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
-- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
-- `remote_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the remote interface.
-- `remote_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the remote interface.
-
-
-
-<a id="nestedatt--spec--qos"></a>
-### Nested Schema for `spec.qos`
-
-Optional:
-
-- `egress_policy` (String)
-- `ingress_policy` (String)
-
-
 
 <a id="nestedatt--alarms"></a>
 ### Nested Schema for `alarms`
@@ -156,6 +62,113 @@ Read-Only:
 - `labels` (Map of String)
 - `name` (String)
 - `namespace` (String)
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Read-Only:
+
+- `bfd` (Attributes) Enable or disable BFD on the ISL. [default=false] (see [below for nested schema](#nestedatt--spec--bfd))
+- `bgp` (Attributes) (see [below for nested schema](#nestedatt--spec--bgp))
+- `ip_mtu` (Number) Sets the IP MTU for the local and remote Interfaces
+- `isis` (Attributes) Enable or disable IS-IS on the ISL. (see [below for nested schema](#nestedatt--spec--isis))
+- `local_default_router` (String) Reference to the DefaultRouter associated with the local Interface in which the ISL will be provisioned.
+- `local_interface` (String) Reference to an Interface.
+- `ospf` (Attributes) Enable or disable OSPF on the ISL. (see [below for nested schema](#nestedatt--spec--ospf))
+- `pool_ipv4` (String) Reference to an IPv4 allocation pool to use for ISL subnet allocations.
+- `pool_ipv6` (String) Reference to an IPv6 allocation pool to use for ISL subnet allocations.
+- `qos` (Attributes) (see [below for nested schema](#nestedatt--spec--qos))
+- `remote_default_router` (String) Reference to the DefaultRouter associated with the remote Interface in which the ISL will be provisioned.
+- `remote_interface` (String) Reference to an Interface.
+- `unnumbered` (String) Enables the use of unnumbered interfaces on the ISL. For IPv6, no IP address are configured on the sub-interface and only the link local address will be used. If any allocation pool is specified for IPv6 that will take precedence and IPs will be assigned to the interfaces.  When using eBGP for an underlay protocol, the DefaultInterfaces which are a part of the ISL will be added to the BGP dynamic neighbor list.
+- `vlan_id` (Number) Single VLAN tag value between 1-4094.
+
+<a id="nestedatt--spec--bfd"></a>
+### Nested Schema for `spec.bfd`
+
+Read-Only:
+
+- `desired_min_transmit_int_ms` (Number) The minimum interval in milliseconds between transmission of BFD control packets.
+- `detection_multiplier` (Number) The number of packets that must be missed to declare this session as down.
+- `enabled` (Boolean) Enables Biforward Detection.
+- `required_min_echo_receive_int_ms` (Number) The minimum interval between echo packets the local node can receive.
+- `required_min_receive_int_ms` (Number) The minimum interval in milliseconds between received BFD control packets that this system should support.
+- `ttl` (Number) Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.
+
+
+<a id="nestedatt--spec--bgp"></a>
+### Nested Schema for `spec.bgp`
+
+Read-Only:
+
+- `afi_safis` (List of String) Which AFI and SAFI to advertise on the BGP peering session. Options: ipv4unicast, ipv6unicast, l2vpnevpn
+- `bgp_group` (String) Reference to a DefaultBgpGroup.
+- `enabled` (Boolean) Enable or disable BGP peering between the two endpoints of the ISL. [default=false]
+- `export_policies` (List of String) Reference to a RoutingPolicy to use when evaluating route exports from the DefaultRouter.
+- `import_policies` (List of String) Reference to a RoutingPolicy to use when evaluating route imports into the DefaultRouter.
+- `keychain` (String) Keychain to be used for authentication
+- `local_interface_as` (Number) The Autonomous System to configure on the Local Interface.
+- `remote_interface_as` (Number) The Autonomous System to configure on the Remote Interface.
+
+
+<a id="nestedatt--spec--isis"></a>
+### Nested Schema for `spec.isis`
+
+Read-Only:
+
+- `address_families` (List of String) Address families to enable. Uses a single-topology (native) configuration mode.
+- `enabled` (Boolean) Enable or disable IS-IS between the two endpoints of the ISL.
+- `local_instance` (String) Reference to a DefaultISISInstance on the local interface.
+- `remote_instance` (String) Reference to a IPV4 DefaultISISInstance on the remote interface
+
+
+<a id="nestedatt--spec--ospf"></a>
+### Nested Schema for `spec.ospf`
+
+Read-Only:
+
+- `enabled` (Boolean) Enable or disable OSPF between the two endpoints of the ISL.
+kubebuilder:validation:Boolean
+- `ospfv2` (Attributes) OSPFv2 Parameters. (see [below for nested schema](#nestedatt--spec--ospf--ospfv2))
+- `ospfv3` (Attributes) OSPFv3 Parameters. (see [below for nested schema](#nestedatt--spec--ospf--ospfv3))
+
+<a id="nestedatt--spec--ospf--ospfv2"></a>
+### Nested Schema for `spec.ospf.ospfv2`
+
+Read-Only:
+
+- `keychain` (String) Keychain to be used for authentication
+- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
+- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface.
+- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
+- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
+
+
+<a id="nestedatt--spec--ospf--ospfv3"></a>
+### Nested Schema for `spec.ospf.ospfv3`
+
+Read-Only:
+
+- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
+- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface
+- `local_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the local interface.
+- `local_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the local interface.
+- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
+- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
+- `remote_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the remote interface.
+- `remote_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the remote interface.
+
+
+
+<a id="nestedatt--spec--qos"></a>
+### Nested Schema for `spec.qos`
+
+Read-Only:
+
+- `egress_policy` (String)
+- `ingress_policy` (String)
+
 
 
 <a id="nestedatt--status"></a>

@@ -35,12 +35,6 @@ description: |-
 <a id="nestedatt--items"></a>
 ### Nested Schema for `items`
 
-Optional:
-
-- `spec` (Attributes) This workflow is used to ping ISLs (Inter-Switch Links) to verify connectivity within a Fabric.
-It accepts a list of fabrics, ISLs, or selectors for both to match ISLs,
-and returns the results of the pings, including the status of each ISL. (see [below for nested schema](#nestedatt--items--spec))
-
 Read-Only:
 
 - `alarms` (Attributes) (see [below for nested schema](#nestedatt--items--alarms))
@@ -48,24 +42,10 @@ Read-Only:
 - `deviations` (Attributes) (see [below for nested schema](#nestedatt--items--deviations))
 - `kind` (String)
 - `metadata` (Attributes) (see [below for nested schema](#nestedatt--items--metadata))
+- `spec` (Attributes) This workflow is used to ping ISLs (Inter-Switch Links) to verify connectivity within a Fabric.
+It accepts a list of fabrics, ISLs, or selectors for both to match ISLs,
+and returns the results of the pings, including the status of each ISL. (see [below for nested schema](#nestedatt--items--spec))
 - `status` (Attributes) The result of the ISL ping (see [below for nested schema](#nestedatt--items--status))
-
-<a id="nestedatt--items--spec"></a>
-### Nested Schema for `items.spec`
-
-Optional:
-
-- `address_family` (String) AddressFamily is the address family to use for the ping.
-It can be one of the following values:
-- "Ipv4": Use Ipv4 addresses for the ping.
-- "Ipv6": Use Ipv6 addresses for the ping.
-- "DualStack": Use both Ipv4 and Ipv6 addresses for the ping.
-- `count` (Number) Count is the number of pings to send.
-- `isl_selectors` (List of String) Inter-Switch Link Selectors is a list of selectors to execute ISL pings for.
-This is a list of label expressions, e.g. ["eda.nokia.com/role=leaf", "eda.nokia.com/region=us-west"].
-- `isls` (List of String) Inter-Switch Links is a list of named ISL resources to execute ISL pings for.
-- `timeout_seconds` (Number) TimeoutSeconds is the timeout for the ping in seconds.
-
 
 <a id="nestedatt--items--alarms"></a>
 ### Nested Schema for `items.alarms`
@@ -97,6 +77,23 @@ Read-Only:
 - `namespace` (String)
 
 
+<a id="nestedatt--items--spec"></a>
+### Nested Schema for `items.spec`
+
+Read-Only:
+
+- `address_family` (String) AddressFamily is the address family to use for the ping.
+It can be one of the following values:
+- "Ipv4": Use Ipv4 addresses for the ping.
+- "Ipv6": Use Ipv6 addresses for the ping.
+- "DualStack": Use both Ipv4 and Ipv6 addresses for the ping.
+- `count` (Number) Count is the number of pings to send.
+- `isl_selectors` (List of String) Inter-Switch Link Selectors is a list of selectors to execute ISL pings for.
+This is a list of label expressions, e.g. ["eda.nokia.com/role=leaf", "eda.nokia.com/region=us-west"].
+- `isls` (List of String) Inter-Switch Links is a list of named ISL resources to execute ISL pings for.
+- `timeout_seconds` (Number) TimeoutSeconds is the timeout for the ping in seconds.
+
+
 <a id="nestedatt--items--status"></a>
 ### Nested Schema for `items.status`
 
@@ -109,6 +106,8 @@ It can be one of the following values:
 - "Success": All pings were successful.
 - "Failed": No pings were successful.
 - "PartialSuccess": Some pings were successful, but not all.
+- "Degraded": The result for this run is failure when compared with a previous Success or PartialSuccess run.
+- `summary` (String) Summary is the result summary of the ping operation.
 
 <a id="nestedatt--items--status--details"></a>
 ### Nested Schema for `items.status.details`

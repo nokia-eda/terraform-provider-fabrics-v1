@@ -94,6 +94,8 @@ It can be one of the following values:
 - "Success": All pings were successful.
 - "Failed": No pings were successful.
 - "PartialSuccess": Some pings were successful, but not all.
+- "Degraded": The result for this run is failure when compared with a previous Success or PartialSuccess run.
+- `summary` (String) Summary is the result summary of the ping operation.
 
 <a id="nestedatt--status--details"></a>
 ### Nested Schema for `status.details`

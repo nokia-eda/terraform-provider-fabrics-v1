@@ -17,15 +17,21 @@ datasources:
   - model_name: isl
     oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls/{name}
     oas_schema: com.nokia.eda.fabrics.v1.ISL
+  - model_name: fabric_topology_list
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+    oas_schema: com.nokia.eda.fabrics.v1.FabricTopologyList
+  - model_name: fabric_topology
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}
+    oas_schema: com.nokia.eda.fabrics.v1.FabricTopology
+  - model_name: workflow_get_inputs_resp_elem
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_input
+    oas_schema: WorkflowGetInputsRespElem
   - model_name: isl_ping_list
     oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings
     oas_schema: com.nokia.eda.fabrics.v1.IslPingList
   - model_name: isl_ping
     oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}
     oas_schema: com.nokia.eda.fabrics.v1.IslPing
-  - model_name: workflow_get_inputs_resp_elem
-    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}/_input
-    oas_schema: WorkflowGetInputsRespElem
 
 resources:
   - model_name: fabric
@@ -34,6 +40,9 @@ resources:
   - model_name: isl
     oas_endpoint: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls
     oas_schema: com.nokia.eda.fabrics.v1.ISL
+  - model_name: fabric_topology
+    oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+    oas_schema: com.nokia.eda.fabrics.v1.FabricTopology
   - model_name: isl_ping
     oas_endpoint: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings
     oas_schema: com.nokia.eda.fabrics.v1.IslPing

@@ -264,6 +264,8 @@ func (p *fabricsProvider) DataSources(ctx context.Context) []func() datasource.D
 		NewAppGroupDataSource,
 		NewFabricDataSource,
 		NewFabricListDataSource,
+		NewFabricTopologyDataSource,
+		NewFabricTopologyListDataSource,
 		NewIslDataSource,
 		NewIslListDataSource,
 		NewIslPingDataSource,
@@ -276,6 +278,7 @@ func (p *fabricsProvider) DataSources(ctx context.Context) []func() datasource.D
 func (p *fabricsProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewFabricResource,
+		NewFabricTopologyResource,
 		NewIslResource,
 		NewIslPingResource,
 	}

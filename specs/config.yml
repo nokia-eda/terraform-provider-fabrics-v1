@@ -17,6 +17,16 @@ data_sources:
       path: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics
       method: GET
 
+  fabric_topology:
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}
+      method: GET
+
+  fabric_topology_list:
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+      method: GET
+
   isl:
     read:
       path: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/isls/{name}
@@ -44,7 +54,7 @@ data_sources:
 
   workflow_get_inputs_resp_elem:
     read:
-      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}/_input
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_input
       method: GET
 
 resources:
@@ -60,6 +70,17 @@ resources:
       method: PUT
     delete:
       path: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics/{name}
+      method: DELETE
+
+  fabric_topology:
+    create:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+      method: POST
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}
+      method: GET
+    delete:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}
       method: DELETE
 
   isl:

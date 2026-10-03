@@ -53,6 +53,7 @@ Optional:
 - `fabric_selectors` (List of String) Selects Fabric resources when connecting multiple Fabrics together. Only one Fabric needs the selector, typically the upper layer (e.g., Superspine) selecting the lower layer (e.g., a pod fabric of leafs and spines). This helps build complete Fabrics in smaller instances of the Fabric resource. This instance selecting other fabrics must also select the InterSwitchLinks connecting itself to the selected Fabrics.
 - `inter_switch_links` (Attributes) (see [below for nested schema](#nestedatt--spec--inter_switch_links))
 - `leafs` (Attributes) (see [below for nested schema](#nestedatt--spec--leafs))
+- `load_balancing` (Attributes) Load Balancing configuration. (see [below for nested schema](#nestedatt--spec--load_balancing))
 - `overlay_protocol` (Attributes) Set the overlay protocol used (see [below for nested schema](#nestedatt--spec--overlay_protocol))
 - `route_leaking` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--spec--route_leaking))
 - `spines` (Attributes) (see [below for nested schema](#nestedatt--spec--spines))
@@ -123,6 +124,22 @@ Required:
 
 - `export_policy` (String) Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.
 - `import_policy` (String) Reference to a Policy resource to use when evaluating route imports into the DefaultRouter.
+
+
+
+<a id="nestedatt--spec--load_balancing"></a>
+### Nested Schema for `spec.load_balancing`
+
+Optional:
+
+- `dynamic` (Attributes) Dynamic load balancing configuration. (see [below for nested schema](#nestedatt--spec--load_balancing--dynamic))
+
+<a id="nestedatt--spec--load_balancing--dynamic"></a>
+### Nested Schema for `spec.load_balancing.dynamic`
+
+Optional:
+
+- `prefixes` (List of String) List of IPv4 and/or IPv6 prefixes. Active routes in the FIB that are covered by this list are programmed with dynamic load balancing if conditions are met.
 
 
 
@@ -285,6 +302,7 @@ Optional:
 Optional:
 
 - `address_families` (List of String) Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured.
+- `keychain` (String) Keychain to be used for authentication
 
 
 

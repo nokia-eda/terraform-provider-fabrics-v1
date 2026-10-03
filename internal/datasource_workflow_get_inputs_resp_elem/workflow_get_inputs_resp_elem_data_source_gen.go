@@ -20,8 +20,8 @@ func WorkflowGetInputsRespElemDataSourceSchema(ctx context.Context) schema.Schem
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required:            true,
-				Description:         "name of the IslPing",
-				MarkdownDescription: "name of the IslPing",
+				Description:         "name of the FabricTopology",
+				MarkdownDescription: "name of the FabricTopology",
 			},
 			"namespace": schema.StringAttribute{
 				Required:            true,

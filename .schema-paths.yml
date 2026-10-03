@@ -47,10 +47,16 @@ ui_result:
 
 workflow_get_inputs_resp_elem:
   - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_input
+      method: GET
+  - read:
       path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}/_input
       method: GET
 
 workflow_input_data:
+  - update:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}/_input
+      method: PUT
   - update:
       path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings/{name}/_input
       method: PUT
@@ -79,6 +85,22 @@ com.nokia.eda.fabrics.v1.fabric_list:
   - delete:
       path: /apps/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrics
       method: DELETE
+
+com.nokia.eda.fabrics.v1.fabric_topology:
+  - create:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+      method: POST
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies/{name}
+      method: GET
+
+com.nokia.eda.fabrics.v1.fabric_topology_list:
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/fabrictopologies
+      method: GET
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/fabrictopologies
+      method: GET
 
 com.nokia.eda.fabrics.v1.fabric_deleted_resources:
   - read:
@@ -131,10 +153,10 @@ com.nokia.eda.fabrics.v1.isl_ping_list:
       path: /workflows/v1/fabrics.eda.nokia.com/v1/namespaces/{namespace}/islpings
       method: GET
 
-totalPaths: 25
-totalSchemas: 68
-usedSchemas: 17
-unusedSchemas: 51
+totalPaths: 33
+totalSchemas: 73
+usedSchemas: 19
+unusedSchemas: 54
 unusedSchemaList:
   - AppGroupVersion
   - ErrorResponse
@@ -176,6 +198,9 @@ unusedSchemaList:
   - Topology
   - WorkflowIdentifier
   - WorkflowInputDataElem
+  - com.nokia.eda.fabrics.v1.FabricTopology_alarms
+  - com.nokia.eda.fabrics.v1.FabricTopology_deviations
+  - com.nokia.eda.fabrics.v1.FabricTopology_metadata
   - com.nokia.eda.fabrics.v1.Fabric_DeletedResourceEntry
   - com.nokia.eda.fabrics.v1.Fabric_alarms
   - com.nokia.eda.fabrics.v1.Fabric_deviations

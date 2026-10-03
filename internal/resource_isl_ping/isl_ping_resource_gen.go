@@ -149,12 +149,14 @@ func IslPingResourceSchema(ctx context.Context) schema.Schema {
 					"isl_selectors": schema.ListAttribute{
 						ElementType:         types.StringType,
 						Optional:            true,
+						Computed:            true,
 						Description:         "Inter-Switch Link Selectors is a list of selectors to execute ISL pings for.\nThis is a list of label expressions, e.g. [\"eda.nokia.com/role=leaf\", \"eda.nokia.com/region=us-west\"].",
 						MarkdownDescription: "Inter-Switch Link Selectors is a list of selectors to execute ISL pings for.\nThis is a list of label expressions, e.g. [\"eda.nokia.com/role=leaf\", \"eda.nokia.com/region=us-west\"].",
 					},
 					"isls": schema.ListAttribute{
 						ElementType:         types.StringType,
 						Optional:            true,
+						Computed:            true,
 						Description:         "Inter-Switch Links is a list of named ISL resources to execute ISL pings for.",
 						MarkdownDescription: "Inter-Switch Links is a list of named ISL resources to execute ISL pings for.",
 					},
@@ -265,15 +267,22 @@ func IslPingResourceSchema(ctx context.Context) schema.Schema {
 					"result": schema.StringAttribute{
 						Optional:            true,
 						Computed:            true,
-						Description:         "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.",
-						MarkdownDescription: "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.",
+						Description:         "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.\n- \"Degraded\": The result for this run is failure when compared with a previous Success or PartialSuccess run.",
+						MarkdownDescription: "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.\n- \"Degraded\": The result for this run is failure when compared with a previous Success or PartialSuccess run.",
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"Success",
 								"Failed",
 								"PartialSuccess",
+								"Degraded",
 							),
 						},
+					},
+					"summary": schema.StringAttribute{
+						Optional:            true,
+						Computed:            true,
+						Description:         "Summary is the result summary of the ping operation.",
+						MarkdownDescription: "Summary is the result summary of the ping operation.",
 					},
 				},
 				CustomType: StatusType{
@@ -2335,6 +2344,24 @@ func (t StatusType) ValueFromObject(ctx context.Context, in basetypes.ObjectValu
 			fmt.Sprintf(`result expected to be basetypes.StringValue, was: %T`, resultAttribute))
 	}
 
+	summaryAttribute, ok := attributes["summary"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`summary is missing from object`)
+
+		return nil, diags
+	}
+
+	summaryVal, ok := summaryAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`summary expected to be basetypes.StringValue, was: %T`, summaryAttribute))
+	}
+
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -2342,6 +2369,7 @@ func (t StatusType) ValueFromObject(ctx context.Context, in basetypes.ObjectValu
 	return StatusValue{
 		Details: detailsVal,
 		Result:  resultVal,
+		Summary: summaryVal,
 		state:   attr.ValueStateKnown,
 	}, diags
 }
@@ -2445,6 +2473,24 @@ func NewStatusValue(attributeTypes map[string]attr.Type, attributes map[string]a
 			fmt.Sprintf(`result expected to be basetypes.StringValue, was: %T`, resultAttribute))
 	}
 
+	summaryAttribute, ok := attributes["summary"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`summary is missing from object`)
+
+		return NewStatusValueUnknown(), diags
+	}
+
+	summaryVal, ok := summaryAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`summary expected to be basetypes.StringValue, was: %T`, summaryAttribute))
+	}
+
 	if diags.HasError() {
 		return NewStatusValueUnknown(), diags
 	}
@@ -2452,6 +2498,7 @@ func NewStatusValue(attributeTypes map[string]attr.Type, attributes map[string]a
 	return StatusValue{
 		Details: detailsVal,
 		Result:  resultVal,
+		Summary: summaryVal,
 		state:   attr.ValueStateKnown,
 	}, diags
 }
@@ -2526,11 +2573,12 @@ var _ basetypes.ObjectValuable = StatusValue{}
 type StatusValue struct {
 	Details basetypes.ListValue   `tfsdk:"details"`
 	Result  basetypes.StringValue `tfsdk:"result"`
+	Summary basetypes.StringValue `tfsdk:"summary"`
 	state   attr.ValueState
 }
 
 func (v StatusValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 2)
+	attrTypes := make(map[string]tftypes.Type, 3)
 
 	var val tftypes.Value
 	var err error
@@ -2539,12 +2587,13 @@ func (v StatusValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error
 		ElemType: DetailsValue{}.Type(ctx),
 	}.TerraformType(ctx)
 	attrTypes["result"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["summary"] = basetypes.StringType{}.TerraformType(ctx)
 
 	objectType := tftypes.Object{AttributeTypes: attrTypes}
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 2)
+		vals := make(map[string]tftypes.Value, 3)
 
 		val, err = v.Details.ToTerraformValue(ctx)
 
@@ -2561,6 +2610,14 @@ func (v StatusValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error
 		}
 
 		vals["result"] = val
+
+		val, err = v.Summary.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["summary"] = val
 
 		if err := tftypes.ValidateValue(objectType, vals); err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
@@ -2624,7 +2681,8 @@ func (v StatusValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 		"details": basetypes.ListType{
 			ElemType: DetailsValue{}.Type(ctx),
 		},
-		"result": basetypes.StringType{},
+		"result":  basetypes.StringType{},
+		"summary": basetypes.StringType{},
 	}
 
 	if v.IsNull() {
@@ -2640,6 +2698,7 @@ func (v StatusValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 		map[string]attr.Value{
 			"details": details,
 			"result":  v.Result,
+			"summary": v.Summary,
 		})
 
 	return objVal, diags
@@ -2668,6 +2727,10 @@ func (v StatusValue) Equal(o attr.Value) bool {
 		return false
 	}
 
+	if !v.Summary.Equal(other.Summary) {
+		return false
+	}
+
 	return true
 }
 
@@ -2684,7 +2747,8 @@ func (v StatusValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"details": basetypes.ListType{
 			ElemType: DetailsValue{}.Type(ctx),
 		},
-		"result": basetypes.StringType{},
+		"result":  basetypes.StringType{},
+		"summary": basetypes.StringType{},
 	}
 }
 

@@ -59,6 +59,7 @@ Optional:
 - `bfd` (Attributes) Enable or disable BFD on the ISL. [default=false] (see [below for nested schema](#nestedatt--spec--bfd))
 - `bgp` (Attributes) (see [below for nested schema](#nestedatt--spec--bgp))
 - `ip_mtu` (Number) Sets the IP MTU for the local and remote Interfaces
+- `isis` (Attributes) Enable or disable IS-IS on the ISL. (see [below for nested schema](#nestedatt--spec--isis))
 - `ospf` (Attributes) Enable or disable OSPF on the ISL. (see [below for nested schema](#nestedatt--spec--ospf))
 - `pool_ipv4` (String) Reference to an IPv4 allocation pool to use for ISL subnet allocations.
 - `pool_ipv6` (String) Reference to an IPv6 allocation pool to use for ISL subnet allocations.
@@ -97,6 +98,20 @@ Optional:
 - `keychain` (String) Keychain to be used for authentication
 
 
+<a id="nestedatt--spec--isis"></a>
+### Nested Schema for `spec.isis`
+
+Required:
+
+- `address_families` (List of String) Address families to enable. Uses a single-topology (native) configuration mode.
+- `enabled` (Boolean) Enable or disable IS-IS between the two endpoints of the ISL.
+
+Optional:
+
+- `local_instance` (String) Reference to a DefaultISISInstance on the local interface.
+- `remote_instance` (String) Reference to a IPV4 DefaultISISInstance on the remote interface
+
+
 <a id="nestedatt--spec--ospf"></a>
 ### Nested Schema for `spec.ospf`
 
@@ -115,6 +130,7 @@ Optional:
 
 Optional:
 
+- `keychain` (String) Keychain to be used for authentication
 - `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
 - `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface.
 - `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.

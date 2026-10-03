@@ -17,7 +17,7 @@ description: |-
 
 ### Required
 
-- `name` (String) name of the IslPing
+- `name` (String) name of the FabricTopology
 - `namespace` (String) the namespace scope in which to operate
 
 ### Read-Only

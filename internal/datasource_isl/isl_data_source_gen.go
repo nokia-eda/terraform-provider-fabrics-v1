@@ -104,32 +104,32 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 					"bfd": schema.SingleNestedAttribute{
 						Attributes: map[string]schema.Attribute{
 							"desired_min_transmit_int_ms": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The minimum interval in milliseconds between transmission of BFD control packets.",
 								MarkdownDescription: "The minimum interval in milliseconds between transmission of BFD control packets.",
 							},
 							"detection_multiplier": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The number of packets that must be missed to declare this session as down.",
 								MarkdownDescription: "The number of packets that must be missed to declare this session as down.",
 							},
 							"enabled": schema.BoolAttribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Enables Biforward Detection.",
 								MarkdownDescription: "Enables Biforward Detection.",
 							},
 							"required_min_echo_receive_int_ms": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The minimum interval between echo packets the local node can receive.",
 								MarkdownDescription: "The minimum interval between echo packets the local node can receive.",
 							},
 							"required_min_receive_int_ms": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 								MarkdownDescription: "The minimum interval in milliseconds between received BFD control packets that this system should support.",
 							},
 							"ttl": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 								MarkdownDescription: "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 							},
@@ -139,7 +139,7 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								AttrTypes: BfdValue{}.AttributeTypes(ctx),
 							},
 						},
-						Optional:            true,
+						Computed:            true,
 						Description:         "Enable or disable BFD on the ISL. [default=false]",
 						MarkdownDescription: "Enable or disable BFD on the ISL. [default=false]",
 					},
@@ -147,44 +147,44 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 						Attributes: map[string]schema.Attribute{
 							"afi_safis": schema.ListAttribute{
 								ElementType:         types.StringType,
-								Optional:            true,
+								Computed:            true,
 								Description:         "Which AFI and SAFI to advertise on the BGP peering session. Options: ipv4unicast, ipv6unicast, l2vpnevpn",
 								MarkdownDescription: "Which AFI and SAFI to advertise on the BGP peering session. Options: ipv4unicast, ipv6unicast, l2vpnevpn",
 							},
 							"bgp_group": schema.StringAttribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Reference to a DefaultBgpGroup.",
 								MarkdownDescription: "Reference to a DefaultBgpGroup.",
 							},
 							"enabled": schema.BoolAttribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Enable or disable BGP peering between the two endpoints of the ISL. [default=false]",
 								MarkdownDescription: "Enable or disable BGP peering between the two endpoints of the ISL. [default=false]",
 							},
 							"export_policies": schema.ListAttribute{
 								ElementType:         types.StringType,
-								Optional:            true,
+								Computed:            true,
 								Description:         "Reference to a RoutingPolicy to use when evaluating route exports from the DefaultRouter.",
 								MarkdownDescription: "Reference to a RoutingPolicy to use when evaluating route exports from the DefaultRouter.",
 							},
 							"import_policies": schema.ListAttribute{
 								ElementType:         types.StringType,
-								Optional:            true,
+								Computed:            true,
 								Description:         "Reference to a RoutingPolicy to use when evaluating route imports into the DefaultRouter.",
 								MarkdownDescription: "Reference to a RoutingPolicy to use when evaluating route imports into the DefaultRouter.",
 							},
 							"keychain": schema.StringAttribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Keychain to be used for authentication",
 								MarkdownDescription: "Keychain to be used for authentication",
 							},
 							"local_interface_as": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The Autonomous System to configure on the Local Interface.",
 								MarkdownDescription: "The Autonomous System to configure on the Local Interface.",
 							},
 							"remote_interface_as": schema.Int64Attribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "The Autonomous System to configure on the Remote Interface.",
 								MarkdownDescription: "The Autonomous System to configure on the Remote Interface.",
 							},
@@ -194,49 +194,87 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								AttrTypes: BgpValue{}.AttributeTypes(ctx),
 							},
 						},
-						Optional: true,
+						Computed: true,
 					},
 					"ip_mtu": schema.Int64Attribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Sets the IP MTU for the local and remote Interfaces",
 						MarkdownDescription: "Sets the IP MTU for the local and remote Interfaces",
 					},
+					"isis": schema.SingleNestedAttribute{
+						Attributes: map[string]schema.Attribute{
+							"address_families": schema.ListAttribute{
+								ElementType:         types.StringType,
+								Computed:            true,
+								Description:         "Address families to enable. Uses a single-topology (native) configuration mode.",
+								MarkdownDescription: "Address families to enable. Uses a single-topology (native) configuration mode.",
+							},
+							"enabled": schema.BoolAttribute{
+								Computed:            true,
+								Description:         "Enable or disable IS-IS between the two endpoints of the ISL.",
+								MarkdownDescription: "Enable or disable IS-IS between the two endpoints of the ISL.",
+							},
+							"local_instance": schema.StringAttribute{
+								Computed:            true,
+								Description:         "Reference to a DefaultISISInstance on the local interface.",
+								MarkdownDescription: "Reference to a DefaultISISInstance on the local interface.",
+							},
+							"remote_instance": schema.StringAttribute{
+								Computed:            true,
+								Description:         "Reference to a IPV4 DefaultISISInstance on the remote interface",
+								MarkdownDescription: "Reference to a IPV4 DefaultISISInstance on the remote interface",
+							},
+						},
+						CustomType: IsisType{
+							ObjectType: types.ObjectType{
+								AttrTypes: IsisValue{}.AttributeTypes(ctx),
+							},
+						},
+						Computed:            true,
+						Description:         "Enable or disable IS-IS on the ISL.",
+						MarkdownDescription: "Enable or disable IS-IS on the ISL.",
+					},
 					"local_default_router": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to the DefaultRouter associated with the local Interface in which the ISL will be provisioned.",
 						MarkdownDescription: "Reference to the DefaultRouter associated with the local Interface in which the ISL will be provisioned.",
 					},
 					"local_interface": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to an Interface.",
 						MarkdownDescription: "Reference to an Interface.",
 					},
 					"ospf": schema.SingleNestedAttribute{
 						Attributes: map[string]schema.Attribute{
 							"enabled": schema.BoolAttribute{
-								Optional:            true,
+								Computed:            true,
 								Description:         "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
 								MarkdownDescription: "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
 							},
 							"ospfv2": schema.SingleNestedAttribute{
 								Attributes: map[string]schema.Attribute{
+									"keychain": schema.StringAttribute{
+										Computed:            true,
+										Description:         "Keychain to be used for authentication",
+										MarkdownDescription: "Keychain to be used for authentication",
+									},
 									"local_ipv4_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFArea on the local interface.",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the local interface.",
 									},
 									"local_ipv4_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFInstance on the local interface.",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the local interface.",
 									},
 									"remote_ipv4_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
 									},
 									"remote_ipv4_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
 									},
@@ -246,49 +284,49 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 										AttrTypes: Ospfv2Value{}.AttributeTypes(ctx),
 									},
 								},
-								Optional:            true,
+								Computed:            true,
 								Description:         "OSPFv2 Parameters.",
 								MarkdownDescription: "OSPFv2 Parameters.",
 							},
 							"ospfv3": schema.SingleNestedAttribute{
 								Attributes: map[string]schema.Attribute{
 									"local_ipv4_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFArea on the local interface.",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the local interface.",
 									},
 									"local_ipv4_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFInstance on the local interface",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the local interface",
 									},
 									"local_ipv6_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV6 DefaultOSPFArea on the local interface.",
 										MarkdownDescription: "Reference to a IPV6 DefaultOSPFArea on the local interface.",
 									},
 									"local_ipv6_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV6 DefaultOSPFInstance on the local interface.",
 										MarkdownDescription: "Reference to a IPV6 DefaultOSPFInstance on the local interface.",
 									},
 									"remote_ipv4_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
 									},
 									"remote_ipv4_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
 										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
 									},
 									"remote_ipv6_area": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV6 DefaultOSPFArea on the remote interface.",
 										MarkdownDescription: "Reference to a IPV6 DefaultOSPFArea on the remote interface.",
 									},
 									"remote_ipv6_instance": schema.StringAttribute{
-										Optional:            true,
+										Computed:            true,
 										Description:         "Reference to a IPV6 DefaultOSPFInstance on the remote interface.",
 										MarkdownDescription: "Reference to a IPV6 DefaultOSPFInstance on the remote interface.",
 									},
@@ -298,7 +336,7 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 										AttrTypes: Ospfv3Value{}.AttributeTypes(ctx),
 									},
 								},
-								Optional:            true,
+								Computed:            true,
 								Description:         "OSPFv3 Parameters.",
 								MarkdownDescription: "OSPFv3 Parameters.",
 							},
@@ -308,27 +346,27 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								AttrTypes: OspfValue{}.AttributeTypes(ctx),
 							},
 						},
-						Optional:            true,
+						Computed:            true,
 						Description:         "Enable or disable OSPF on the ISL.",
 						MarkdownDescription: "Enable or disable OSPF on the ISL.",
 					},
 					"pool_ipv4": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to an IPv4 allocation pool to use for ISL subnet allocations.",
 						MarkdownDescription: "Reference to an IPv4 allocation pool to use for ISL subnet allocations.",
 					},
 					"pool_ipv6": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to an IPv6 allocation pool to use for ISL subnet allocations.",
 						MarkdownDescription: "Reference to an IPv6 allocation pool to use for ISL subnet allocations.",
 					},
 					"qos": schema.SingleNestedAttribute{
 						Attributes: map[string]schema.Attribute{
 							"egress_policy": schema.StringAttribute{
-								Optional: true,
+								Computed: true,
 							},
 							"ingress_policy": schema.StringAttribute{
-								Optional: true,
+								Computed: true,
 							},
 						},
 						CustomType: QosType{
@@ -336,25 +374,25 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								AttrTypes: QosValue{}.AttributeTypes(ctx),
 							},
 						},
-						Optional: true,
+						Computed: true,
 					},
 					"remote_default_router": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to the DefaultRouter associated with the remote Interface in which the ISL will be provisioned.",
 						MarkdownDescription: "Reference to the DefaultRouter associated with the remote Interface in which the ISL will be provisioned.",
 					},
 					"remote_interface": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Reference to an Interface.",
 						MarkdownDescription: "Reference to an Interface.",
 					},
 					"unnumbered": schema.StringAttribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Enables the use of unnumbered interfaces on the ISL. For IPv6, no IP address are configured on the sub-interface and only the link local address will be used. If any allocation pool is specified for IPv6 that will take precedence and IPs will be assigned to the interfaces.  When using eBGP for an underlay protocol, the DefaultInterfaces which are a part of the ISL will be added to the BGP dynamic neighbor list.",
 						MarkdownDescription: "Enables the use of unnumbered interfaces on the ISL. For IPv6, no IP address are configured on the sub-interface and only the link local address will be used. If any allocation pool is specified for IPv6 that will take precedence and IPs will be assigned to the interfaces.  When using eBGP for an underlay protocol, the DefaultInterfaces which are a part of the ISL will be added to the BGP dynamic neighbor list.",
 					},
 					"vlan_id": schema.Int64Attribute{
-						Optional:            true,
+						Computed:            true,
 						Description:         "Single VLAN tag value between 1-4094.",
 						MarkdownDescription: "Single VLAN tag value between 1-4094.",
 					},
@@ -364,7 +402,7 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 						AttrTypes: SpecValue{}.AttributeTypes(ctx),
 					},
 				},
-				Optional:            true,
+				Computed:            true,
 				Description:         "The ISL enables the configuration and management of direct links between Nodes. This resource allows for specifying IPv4 and IPv6 allocation pools, enabling BFD for fast failure detection, and configuring VLAN IDs for the ISL. It also supports BGP peering between the endpoints, with options for setting autonomous systems, AFI/SAFI configurations, and import/export routing policies.",
 				MarkdownDescription: "The ISL enables the configuration and management of direct links between Nodes. This resource allows for specifying IPv4 and IPv6 allocation pools, enabling BFD for fast failure detection, and configuring VLAN IDs for the ISL. It also supports BGP peering between the endpoints, with options for setting autonomous systems, AFI/SAFI configurations, and import/export routing policies.",
 			},
@@ -1924,6 +1962,24 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`ip_mtu expected to be basetypes.Int64Value, was: %T`, ipMtuAttribute))
 	}
 
+	isisAttribute, ok := attributes["isis"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`isis is missing from object`)
+
+		return nil, diags
+	}
+
+	isisVal, ok := isisAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`isis expected to be basetypes.ObjectValue, was: %T`, isisAttribute))
+	}
+
 	localDefaultRouterAttribute, ok := attributes["local_default_router"]
 
 	if !ok {
@@ -2112,6 +2168,7 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 		Bfd:                 bfdVal,
 		Bgp:                 bgpVal,
 		IpMtu:               ipMtuVal,
+		Isis:                isisVal,
 		LocalDefaultRouter:  localDefaultRouterVal,
 		LocalInterface:      localInterfaceVal,
 		Ospf:                ospfVal,
@@ -2243,6 +2300,24 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`ip_mtu expected to be basetypes.Int64Value, was: %T`, ipMtuAttribute))
 	}
 
+	isisAttribute, ok := attributes["isis"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`isis is missing from object`)
+
+		return NewSpecValueUnknown(), diags
+	}
+
+	isisVal, ok := isisAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`isis expected to be basetypes.ObjectValue, was: %T`, isisAttribute))
+	}
+
 	localDefaultRouterAttribute, ok := attributes["local_default_router"]
 
 	if !ok {
@@ -2431,6 +2506,7 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 		Bfd:                 bfdVal,
 		Bgp:                 bgpVal,
 		IpMtu:               ipMtuVal,
+		Isis:                isisVal,
 		LocalDefaultRouter:  localDefaultRouterVal,
 		LocalInterface:      localInterfaceVal,
 		Ospf:                ospfVal,
@@ -2516,6 +2592,7 @@ type SpecValue struct {
 	Bfd                 basetypes.ObjectValue `tfsdk:"bfd"`
 	Bgp                 basetypes.ObjectValue `tfsdk:"bgp"`
 	IpMtu               basetypes.Int64Value  `tfsdk:"ip_mtu"`
+	Isis                basetypes.ObjectValue `tfsdk:"isis"`
 	LocalDefaultRouter  basetypes.StringValue `tfsdk:"local_default_router"`
 	LocalInterface      basetypes.StringValue `tfsdk:"local_interface"`
 	Ospf                basetypes.ObjectValue `tfsdk:"ospf"`
@@ -2530,7 +2607,7 @@ type SpecValue struct {
 }
 
 func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 13)
+	attrTypes := make(map[string]tftypes.Type, 14)
 
 	var val tftypes.Value
 	var err error
@@ -2542,6 +2619,9 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		AttrTypes: BgpValue{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["ip_mtu"] = basetypes.Int64Type{}.TerraformType(ctx)
+	attrTypes["isis"] = basetypes.ObjectType{
+		AttrTypes: IsisValue{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
 	attrTypes["local_default_router"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["local_interface"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["ospf"] = basetypes.ObjectType{
@@ -2561,7 +2641,7 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 13)
+		vals := make(map[string]tftypes.Value, 14)
 
 		val, err = v.Bfd.ToTerraformValue(ctx)
 
@@ -2586,6 +2666,14 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		}
 
 		vals["ip_mtu"] = val
+
+		val, err = v.Isis.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["isis"] = val
 
 		val, err = v.LocalDefaultRouter.ToTerraformValue(ctx)
 
@@ -2738,6 +2826,27 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		)
 	}
 
+	var isis basetypes.ObjectValue
+
+	if v.Isis.IsNull() {
+		isis = types.ObjectNull(
+			IsisValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.Isis.IsUnknown() {
+		isis = types.ObjectUnknown(
+			IsisValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.Isis.IsNull() && !v.Isis.IsUnknown() {
+		isis = types.ObjectValueMust(
+			IsisValue{}.AttributeTypes(ctx),
+			v.Isis.Attributes(),
+		)
+	}
+
 	var ospf basetypes.ObjectValue
 
 	if v.Ospf.IsNull() {
@@ -2787,7 +2896,10 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		"bgp": basetypes.ObjectType{
 			AttrTypes: BgpValue{}.AttributeTypes(ctx),
 		},
-		"ip_mtu":               basetypes.Int64Type{},
+		"ip_mtu": basetypes.Int64Type{},
+		"isis": basetypes.ObjectType{
+			AttrTypes: IsisValue{}.AttributeTypes(ctx),
+		},
 		"local_default_router": basetypes.StringType{},
 		"local_interface":      basetypes.StringType{},
 		"ospf": basetypes.ObjectType{
@@ -2818,6 +2930,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"bfd":                   bfd,
 			"bgp":                   bgp,
 			"ip_mtu":                v.IpMtu,
+			"isis":                  isis,
 			"local_default_router":  v.LocalDefaultRouter,
 			"local_interface":       v.LocalInterface,
 			"ospf":                  ospf,
@@ -2857,6 +2970,10 @@ func (v SpecValue) Equal(o attr.Value) bool {
 	}
 
 	if !v.IpMtu.Equal(other.IpMtu) {
+		return false
+	}
+
+	if !v.Isis.Equal(other.Isis) {
 		return false
 	}
 
@@ -2919,7 +3036,10 @@ func (v SpecValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"bgp": basetypes.ObjectType{
 			AttrTypes: BgpValue{}.AttributeTypes(ctx),
 		},
-		"ip_mtu":               basetypes.Int64Type{},
+		"ip_mtu": basetypes.Int64Type{},
+		"isis": basetypes.ObjectType{
+			AttrTypes: IsisValue{}.AttributeTypes(ctx),
+		},
 		"local_default_router": basetypes.StringType{},
 		"local_interface":      basetypes.StringType{},
 		"ospf": basetypes.ObjectType{
@@ -4356,6 +4476,524 @@ func (v BgpValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	}
 }
 
+var _ basetypes.ObjectTypable = IsisType{}
+
+type IsisType struct {
+	basetypes.ObjectType
+}
+
+func (t IsisType) Equal(o attr.Type) bool {
+	other, ok := o.(IsisType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t IsisType) String() string {
+	return "IsisType"
+}
+
+func (t IsisType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	addressFamiliesAttribute, ok := attributes["address_families"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`address_families is missing from object`)
+
+		return nil, diags
+	}
+
+	addressFamiliesVal, ok := addressFamiliesAttribute.(basetypes.ListValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`address_families expected to be basetypes.ListValue, was: %T`, addressFamiliesAttribute))
+	}
+
+	enabledAttribute, ok := attributes["enabled"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`enabled is missing from object`)
+
+		return nil, diags
+	}
+
+	enabledVal, ok := enabledAttribute.(basetypes.BoolValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`enabled expected to be basetypes.BoolValue, was: %T`, enabledAttribute))
+	}
+
+	localInstanceAttribute, ok := attributes["local_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	localInstanceVal, ok := localInstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_instance expected to be basetypes.StringValue, was: %T`, localInstanceAttribute))
+	}
+
+	remoteInstanceAttribute, ok := attributes["remote_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteInstanceVal, ok := remoteInstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_instance expected to be basetypes.StringValue, was: %T`, remoteInstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return IsisValue{
+		AddressFamilies: addressFamiliesVal,
+		Enabled:         enabledVal,
+		LocalInstance:   localInstanceVal,
+		RemoteInstance:  remoteInstanceVal,
+		state:           attr.ValueStateKnown,
+	}, diags
+}
+
+func NewIsisValueNull() IsisValue {
+	return IsisValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewIsisValueUnknown() IsisValue {
+	return IsisValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewIsisValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (IsisValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing IsisValue Attribute Value",
+				"While creating a IsisValue value, a missing attribute value was detected. "+
+					"A IsisValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("IsisValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid IsisValue Attribute Type",
+				"While creating a IsisValue value, an invalid attribute value was detected. "+
+					"A IsisValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("IsisValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("IsisValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra IsisValue Attribute Value",
+				"While creating a IsisValue value, an extra attribute value was detected. "+
+					"A IsisValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra IsisValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewIsisValueUnknown(), diags
+	}
+
+	addressFamiliesAttribute, ok := attributes["address_families"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`address_families is missing from object`)
+
+		return NewIsisValueUnknown(), diags
+	}
+
+	addressFamiliesVal, ok := addressFamiliesAttribute.(basetypes.ListValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`address_families expected to be basetypes.ListValue, was: %T`, addressFamiliesAttribute))
+	}
+
+	enabledAttribute, ok := attributes["enabled"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`enabled is missing from object`)
+
+		return NewIsisValueUnknown(), diags
+	}
+
+	enabledVal, ok := enabledAttribute.(basetypes.BoolValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`enabled expected to be basetypes.BoolValue, was: %T`, enabledAttribute))
+	}
+
+	localInstanceAttribute, ok := attributes["local_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_instance is missing from object`)
+
+		return NewIsisValueUnknown(), diags
+	}
+
+	localInstanceVal, ok := localInstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_instance expected to be basetypes.StringValue, was: %T`, localInstanceAttribute))
+	}
+
+	remoteInstanceAttribute, ok := attributes["remote_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_instance is missing from object`)
+
+		return NewIsisValueUnknown(), diags
+	}
+
+	remoteInstanceVal, ok := remoteInstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_instance expected to be basetypes.StringValue, was: %T`, remoteInstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return NewIsisValueUnknown(), diags
+	}
+
+	return IsisValue{
+		AddressFamilies: addressFamiliesVal,
+		Enabled:         enabledVal,
+		LocalInstance:   localInstanceVal,
+		RemoteInstance:  remoteInstanceVal,
+		state:           attr.ValueStateKnown,
+	}, diags
+}
+
+func NewIsisValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) IsisValue {
+	object, diags := NewIsisValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewIsisValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t IsisType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewIsisValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewIsisValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewIsisValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewIsisValueMust(IsisValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t IsisType) ValueType(ctx context.Context) attr.Value {
+	return IsisValue{}
+}
+
+var _ basetypes.ObjectValuable = IsisValue{}
+
+type IsisValue struct {
+	AddressFamilies basetypes.ListValue   `tfsdk:"address_families"`
+	Enabled         basetypes.BoolValue   `tfsdk:"enabled"`
+	LocalInstance   basetypes.StringValue `tfsdk:"local_instance"`
+	RemoteInstance  basetypes.StringValue `tfsdk:"remote_instance"`
+	state           attr.ValueState
+}
+
+func (v IsisValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 4)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["address_families"] = basetypes.ListType{
+		ElemType: types.StringType,
+	}.TerraformType(ctx)
+	attrTypes["enabled"] = basetypes.BoolType{}.TerraformType(ctx)
+	attrTypes["local_instance"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_instance"] = basetypes.StringType{}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 4)
+
+		val, err = v.AddressFamilies.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["address_families"] = val
+
+		val, err = v.Enabled.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["enabled"] = val
+
+		val, err = v.LocalInstance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_instance"] = val
+
+		val, err = v.RemoteInstance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_instance"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v IsisValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v IsisValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v IsisValue) String() string {
+	return "IsisValue"
+}
+
+func (v IsisValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	var addressFamiliesVal basetypes.ListValue
+	switch {
+	case v.AddressFamilies.IsUnknown():
+		addressFamiliesVal = types.ListUnknown(types.StringType)
+	case v.AddressFamilies.IsNull():
+		addressFamiliesVal = types.ListNull(types.StringType)
+	default:
+		var d diag.Diagnostics
+		addressFamiliesVal, d = types.ListValue(types.StringType, v.AddressFamilies.Elements())
+		diags.Append(d...)
+	}
+
+	if diags.HasError() {
+		return types.ObjectUnknown(map[string]attr.Type{
+			"address_families": basetypes.ListType{
+				ElemType: types.StringType,
+			},
+			"enabled":         basetypes.BoolType{},
+			"local_instance":  basetypes.StringType{},
+			"remote_instance": basetypes.StringType{},
+		}), diags
+	}
+
+	attributeTypes := map[string]attr.Type{
+		"address_families": basetypes.ListType{
+			ElemType: types.StringType,
+		},
+		"enabled":         basetypes.BoolType{},
+		"local_instance":  basetypes.StringType{},
+		"remote_instance": basetypes.StringType{},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"address_families": addressFamiliesVal,
+			"enabled":          v.Enabled,
+			"local_instance":   v.LocalInstance,
+			"remote_instance":  v.RemoteInstance,
+		})
+
+	return objVal, diags
+}
+
+func (v IsisValue) Equal(o attr.Value) bool {
+	other, ok := o.(IsisValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.AddressFamilies.Equal(other.AddressFamilies) {
+		return false
+	}
+
+	if !v.Enabled.Equal(other.Enabled) {
+		return false
+	}
+
+	if !v.LocalInstance.Equal(other.LocalInstance) {
+		return false
+	}
+
+	if !v.RemoteInstance.Equal(other.RemoteInstance) {
+		return false
+	}
+
+	return true
+}
+
+func (v IsisValue) Type(ctx context.Context) attr.Type {
+	return IsisType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v IsisValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"address_families": basetypes.ListType{
+			ElemType: types.StringType,
+		},
+		"enabled":         basetypes.BoolType{},
+		"local_instance":  basetypes.StringType{},
+		"remote_instance": basetypes.StringType{},
+	}
+}
+
 var _ basetypes.ObjectTypable = OspfType{}
 
 type OspfType struct {
@@ -4869,6 +5507,24 @@ func (t Ospfv2Type) ValueFromObject(ctx context.Context, in basetypes.ObjectValu
 
 	attributes := in.Attributes()
 
+	keychainAttribute, ok := attributes["keychain"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`keychain is missing from object`)
+
+		return nil, diags
+	}
+
+	keychainVal, ok := keychainAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
+	}
+
 	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
 
 	if !ok {
@@ -4946,6 +5602,7 @@ func (t Ospfv2Type) ValueFromObject(ctx context.Context, in basetypes.ObjectValu
 	}
 
 	return Ospfv2Value{
+		Keychain:           keychainVal,
 		LocalIpv4Area:      localIpv4AreaVal,
 		LocalIpv4Instance:  localIpv4InstanceVal,
 		RemoteIpv4Area:     remoteIpv4AreaVal,
@@ -5017,6 +5674,24 @@ func NewOspfv2Value(attributeTypes map[string]attr.Type, attributes map[string]a
 		return NewOspfv2ValueUnknown(), diags
 	}
 
+	keychainAttribute, ok := attributes["keychain"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`keychain is missing from object`)
+
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	keychainVal, ok := keychainAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
+	}
+
 	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
 
 	if !ok {
@@ -5094,6 +5769,7 @@ func NewOspfv2Value(attributeTypes map[string]attr.Type, attributes map[string]a
 	}
 
 	return Ospfv2Value{
+		Keychain:           keychainVal,
 		LocalIpv4Area:      localIpv4AreaVal,
 		LocalIpv4Instance:  localIpv4InstanceVal,
 		RemoteIpv4Area:     remoteIpv4AreaVal,
@@ -5170,6 +5846,7 @@ func (t Ospfv2Type) ValueType(ctx context.Context) attr.Value {
 var _ basetypes.ObjectValuable = Ospfv2Value{}
 
 type Ospfv2Value struct {
+	Keychain           basetypes.StringValue `tfsdk:"keychain"`
 	LocalIpv4Area      basetypes.StringValue `tfsdk:"local_ipv4_area"`
 	LocalIpv4Instance  basetypes.StringValue `tfsdk:"local_ipv4_instance"`
 	RemoteIpv4Area     basetypes.StringValue `tfsdk:"remote_ipv4_area"`
@@ -5178,11 +5855,12 @@ type Ospfv2Value struct {
 }
 
 func (v Ospfv2Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 4)
+	attrTypes := make(map[string]tftypes.Type, 5)
 
 	var val tftypes.Value
 	var err error
 
+	attrTypes["keychain"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["local_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["local_ipv4_instance"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["remote_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
@@ -5192,7 +5870,15 @@ func (v Ospfv2Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 4)
+		vals := make(map[string]tftypes.Value, 5)
+
+		val, err = v.Keychain.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["keychain"] = val
 
 		val, err = v.LocalIpv4Area.ToTerraformValue(ctx)
 
@@ -5256,6 +5942,7 @@ func (v Ospfv2Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 	var diags diag.Diagnostics
 
 	attributeTypes := map[string]attr.Type{
+		"keychain":             basetypes.StringType{},
 		"local_ipv4_area":      basetypes.StringType{},
 		"local_ipv4_instance":  basetypes.StringType{},
 		"remote_ipv4_area":     basetypes.StringType{},
@@ -5273,6 +5960,7 @@ func (v Ospfv2Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 	objVal, diags := types.ObjectValue(
 		attributeTypes,
 		map[string]attr.Value{
+			"keychain":             v.Keychain,
 			"local_ipv4_area":      v.LocalIpv4Area,
 			"local_ipv4_instance":  v.LocalIpv4Instance,
 			"remote_ipv4_area":     v.RemoteIpv4Area,
@@ -5295,6 +5983,10 @@ func (v Ospfv2Value) Equal(o attr.Value) bool {
 
 	if v.state != attr.ValueStateKnown {
 		return true
+	}
+
+	if !v.Keychain.Equal(other.Keychain) {
+		return false
 	}
 
 	if !v.LocalIpv4Area.Equal(other.LocalIpv4Area) {
@@ -5326,6 +6018,7 @@ func (v Ospfv2Value) Type(ctx context.Context) attr.Type {
 
 func (v Ospfv2Value) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
+		"keychain":             basetypes.StringType{},
 		"local_ipv4_area":      basetypes.StringType{},
 		"local_ipv4_instance":  basetypes.StringType{},
 		"remote_ipv4_area":     basetypes.StringType{},
